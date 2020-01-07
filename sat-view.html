@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Satellite Viewer</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="HandheldFriendly" content="true" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0 minimal-ui" />
+        <meta name="Description" content="Hi-resolution satellite imagery of Australian weather by Himawari, a geostationary satellite operated by the Japan Meteorological Agency (JMA) and interpreted by the Australian Bureau of Meteorology.">
+
+        <meta name="theme-color" content="#333333">
+
+        <meta property="og:site_name" content="Satellite Viewer" />
+<meta property="og:url" content="http://satview.bom.gov.au/">  
+<meta property="og:type" content="website" /> 
+<meta property="og:title" content="Satellite Viewer" />
+<meta property="og:description" content="Hi-resolution satellite imagery of Australian weather by Himawari, a geostationary satellite operated by the Japan Meteorological Agency (JMA) and interpreted by the Australian Bureau of Meteorology." />
+<meta property="og:image" content="http://satview.bom.gov.au/assets/images/fbimage.jpg" />
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="application.min.css" />
+    </head>
+    <body class="noselect">
+        <div class="row hw-panel-info navbar-fixed-top">
+            <div class="container-fluid">
+<!--                 <div class="row">
+                    <div class="col-sm-2 hidden-xs">
+                        <div class="hw-logo hidden-xs">
+                            <a href="http://www.bom.gov.au">
+                                <img src="http://satview.bom.gov.au/assets/images/logo-inline.svg" alt="Bureau of Meteorology"/>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-xs-8 col-sm-8 hw-product-heading">
+                        <div class="hw-logo">
+                            <h1 class="product-name hw-semibold hw-white hw-top-heading" title="Product Type">Loading...</h1>
+                        </div>
+                    </div>
+                    <div class="col-xs-4 col-sm-2 text-right">
+                        <button class="material-icons hw-btn-more dropdown-toggle hw-mat-icon-big map-fullscreen-btn hide" title="Go Fullscreen">fullscreen</button>
+                        <button class="material-icons hw-btn-more dropdown-toggle hw-mat-icon-big" data-toggle="dropdown" aria-haspopup="true" title="More information">more_horiz</button> -->
+<ul class="list-group dropdown-menu scrollable-menu dropdown-menu-right hw-panel-more hw-enable-scroll">
+    <li class="btn hw-panel-layers-btn" role="presentation">
+        <a href="http://satview.bom.gov.au/about.html"><i class="material-icons hw-more-menu-size">info_outline</i>About</a>
+    </li>
+    <li class="btn hw-panel-layers-btn" role="presentation">
+        <a href="http://satview.bom.gov.au/help.html"><i class="material-icons hw-more-menu-size">help_outline</i>Help</a>
+    </li>
+    <li class="btn hw-panel-layers-btn" role="presentation">
+        <a href="http://www.bom.gov.au/other/feedback/?ref=ftr" target="_blank"><i class="material-icons hw-more-menu-size">chat_bubble_outline</i>Feedback</a>
+    </li>
+    <li class="btn hw-panel-layers-btn" role="presentation">
+        <a href="http://www.bom.gov.au/australia/satellite/"><i class="material-icons hw-more-menu-size">web</i>Standard Viewer</a>
+    </li>
+    <li class="divider"></li>
+    <li>
+        <ul>
+            <li class="btn hw-panel-social-btn" role="presentation">
+                <a href="https://twitter.com/intent/tweet?text=See%20high-definition%20images%20from%20%23Himawari8%20on%20%40BOM_Au%27s%20new%20satellite%20viewer%3A%20http%3A%2F%2Fsatview.bom.gov.au%2F%20%23BOMsat" target="_blank">
+                    <img src="http://satview.bom.gov.au/assets/images/twitter-logo.png" alt="Twitter"/>
+                </a>
+            </li>
+            <li class="btn hw-panel-social-btn" role="presentation">
+                <a href="https://www.facebook.com/sharer/sharer.php?u=http://satview.bom.gov.au/index.html" target="_blank">
+                    <img src="http://satview.bom.gov.au/assets/images/facebook-logo.png" alt="Facebook"/>
+                </a>
+            </li>
+        </ul>
+    </li>
+    <li class="divider visible-xs"></li>
+    <li class="btn hw-panel-layers-btn hw-logo-menu visible-xs" role="presentation">
+        <a href="http://www.bom.gov.au">
+            <img src="http://satview.bom.gov.au/assets/images/logo-stacked.svg" alt="Bureau of Meteorology"/>
+        </a>
+    </li>
+</ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="map" class="map">
+            <div class="spinner hide">
+                <div class="bounce1"></div>
+                <div class="bounce2"></div>
+                <div class="bounce3"></div>
+            </div>
+            <div class="alert product-pulse fade in" role="alert">
+                <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <div class="alert-title">
+                    <i class="material-icons"></i>
+                    <strong class="panel-title"></strong>
+                </div>
+                <span class="panel-body"></span>
+            </div>
+            <span class="label label-primary product-attribution"></span>
+        </div>
+        <div id="preloader" class="preloader"></div>
+        <nav class="navbar navbar-default navbar-fixed-bottom hw-panel-navbar">
+            <div class="legend">
+    <div class="legend-color-ramp legend-ir hide" data-legend-id="ir">
+        <div class="ir-60">60&deg;C</div>
+        <div class="ir-50 hidden-xs">50</div>
+        <div class="ir-40">40</div>
+        <div class="ir-30 hidden-xs">30</div>
+        <div class="ir-20">20</div>
+        <div class="ir-10 hidden-xs">10</div>
+        <div class="ir-0">0</div>
+        <div class="ir-m10 hidden-xs">-10</div>
+        <div class="ir-m20">-20</div>
+        <div class="ir-m30 hidden-xs">-30</div>
+        <div class="ir-m40">-40</div>
+        <div class="ir-m50 hidden-xs">-50</div>
+        <div class="ir-m60">-60</div>
+        <div class="ir-m70 hidden-xs">-70</div>
+        <div class="ir-m80">-80</div>
+        <div class="ir-m90 hidden-xs">-90</div>
+        <div class="ir-m100">-100</div>
+        <div class="ir-m110">-110</div>
+    </div>
+     <div class="legend-color-ramp legend-lir hide" data-legend-id="lir">
+        <div class="lir-m2">Low Frequency</div>
+        <div class="lir-m3 hidden-xs"></div>
+        <div class="lir-m5"></div>
+        <div class="lir-m10 hidden-xs"></div>
+        <div class="lir-m20">High Frequency</div>
+    </div>
+
+    <div class="legend-color-ramp legend-irzehr hide" data-legend-id="irzehr">
+        <div class="ir-zehr60m20 visible-xs">60&deg;C</div>
+        <div class="ir-zehr60 hidden-xs">
+            <span class="hidden-xs">60&deg;C</span>
+            <span class="visible-xs">60</span>
+        </div>
+        <div class="ir-zehr50 hidden-xs">50</div>
+        <div class="ir-zehr40 hidden-xs">40</div>
+        <div class="ir-zehr30 hidden-xs">30</div>
+        <div class="ir-zehr20 hidden-xs">20</div>
+        <div class="ir-zehr10 hidden-xs">10</div>
+        <div class="ir-zehr0 hidden-xs">0</div>
+        <div class="ir-zehrm10 hidden-xs">-10</div>
+        <div class="ir-zehrm20 hidden-xs">-20</div>
+        <div class="ir-zehrm30">-30</div>
+        <div class="ir-zehrm40">-40</div>
+        <div class="ir-zehrm50">-50</div>
+        <div class="ir-zehrm60">-60</div>
+        <div class="ir-zehrm70">-70</div>
+        <div class="ir-zehrm80">-80</div>
+        <div class="ir-zehrm90">-90</div>
+        <div class="ir-zehrm100">-100</div>
+        <div class="ir-zehrm110">-110</div>
+    </div>
+</div>
+<div class="hw-time-label visible-xs-block">
+    <span class="product-date-short hw-semibold hw-white"></span>&nbsp;<span class="product-time-short hw-semibold hw-white"></span>
+</div>
+
+            <div class="hidden">
+                <span class="product-date-short hw-semibold hw-white"></span>&nbsp;
+                <span class="product-time-short hw-semibold hw-white"></span>
+            </div>
+            <div id="mousePosition" class="hidden-xs hw-mouse-position hidden"></div>
+            <div id="preloaderStatus" class="preloader-status hidden">Loading...</div>
+            <div class="container-fluid hw-navbar-animation">
+                <div class="row">
+                    <div class="col-xs-2 col-md-2">
+                        <div class="dropup navbar-left settings-select">
+                            <button class="btn btn-default dropdown-toggle hw-btn-layers hw-semibold hidden-xs" data-toggle="dropdown" aria-hidden="true">
+                                <i class="material-icons hw-panel-layers-icon" aria-hidden="true">layers</i>Layers +
+                            </button>
+                            <button class="btn btn-default hw-btn-av dropdown-toggle hw-btn-layers hw-mat-icon hw-semibold visible-xs" data-toggle="dropdown" aria-hidden="true">
+                                <i class="material-icons hw-mat-size">layers</i>
+                            </button>
+                            <ul class="dropdown-menu scrollable-menu drop-up hw-panel-layers" role="menu" aria-labelledby="settingsSelect">
+                                <li class="divider"></li>
+                                <li class="btn hw-panel-layers-btn" role="presentation">
+                                    <input class="settings-checkbox" type="checkbox" id="settingsCitiesLayer" value="setting-cities" />
+                                    <label for="settingsCitiesLayer"><span></span>Cities</label>
+                                </li>
+                                <li class="btn hw-panel-layers-btn" role="presentation">
+                                    <input class="settings-checkbox" type="checkbox" id="settingsRoadsLayer" value="setting-roads" />
+                                    <label for="settingsRoadsLayer"><span></span>Roads</label>
+                                </li>
+                                <li class="btn hw-panel-layers-btn" role="presentation">
+                                    <input class="settings-checkbox" type="checkbox" id="settingsBoundariesLayer" value="setting-boundaries" />
+                                    <label for="settingsBoundariesLayer"><span></span>Boundaries</label>
+                                </li>
+                                <li class="btn hw-panel-layers-btn" role="presentation">
+                                    <input class="settings-checkbox" type="checkbox" id="settingsCoastalLayer" value="setting-coastal"  />
+                                    <label for="settingsCoastalLayer" ><span></span>Coastal</label>
+                                </li>
+
+                                <li class="divider"></li>
+                                <li class="btn hw-panel-layers-btn" role="presentation">
+                                    <input type="checkbox" id="settingsLegend" value="setting-legend" checked />
+                                    <label for="settingsLegend"><span></span>Show Legend</label>
+                                </li>
+                                <li class="btn hw-panel-layers-btn hidden-xs" role="presentation">
+                                    <input type="checkbox" id="settingsMouseCoords" value="setting-coords" />
+                                    <label for="settingsMouseCoords"><span></span>Show Coordinates</label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-md-8 animation-btns hidden-xs">
+                        <div class="row no-gutter">
+                            <div class="col-xs-6 col-md-5">
+                                <div class="visible-lg ">
+                                    <label for="timestep">
+                                        <span class="hw-timestep-label">
+                                            <span class="product-date hw-semibold hw-white"></span>
+                                            <span class="product-time hw-semibold hw-white"></span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="hidden-lg">
+                                    <label for="timestep">
+                                        <span class="hw-timestep-label">
+                                            <span class="product-date-short hw-semibold hw-white"></span>
+                                            <span class="product-time-short hw-semibold hw-white"></span>
+                                        </span>
+                                    </label>
+                                </div>
+                                <input aria-hidden="true" id="timestep" class="timestep" type="range" min="0" max="0" step="1" value="0" title="" />
+                                <input aria-hidden="true" id="timestepPrev" type="hidden" value="0" />
+                            </div>
+                            <div class="col-xs-6 col-md-7 text-center">
+                                <div class="visible-md visible-lg">
+                                    <button aria-hidden="true" class="hw-btn-av animation-slower" title="Slow"><span class="hw-tiny-button">Slower</span><i class="material-icons hw-mat-size">remove</i></button>
+                                    <button aria-hidden="true" class="hw-btn-av animation-step-backward" title="Skip Back"><i class="material-icons hw-mat-size">skip_previous</i></button>
+                                    <button aria-hidden="true" class="hw-btn-av animation-play" title="Play"><i class="material-icons hw-play-size">play_arrow</i></button>
+                                    <button aria-hidden="true" class="hw-btn-av animation-step-forward" title="Skip Forward"><i class="material-icons hw-mat-size">skip_next</i></button>
+                                    <button aria-hidden="true" class="hw-btn-av animation-faster" title="Fast"><i class="material-icons hw-mat-size">add</i><span class="hw-tiny-button">Faster</span></button>
+                                </div>
+                                <div class="visible-xs visible-sm">
+                                    <button aria-hidden="true" class="hw-btn-av animation-step-backward" title="Skip Back"><i class="material-icons hw-mat-size">skip_previous</i></button>
+                                    <button aria-hidden="true" class="hw-btn-av animation-play" title="Play"><i class="material-icons hw-play-size">play_arrow</i></button>
+                                    <button aria-hidden="true" class="hw-btn-av animation-step-forward" title="Skip Forward"><i class="material-icons hw-mat-size">skip_next</i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6 col-md-8 animation-btns visible-xs">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 text-center">
+                                <button aria-hidden="true" class="hw-btn-av animation-step-backward" title="Skip Back"><i class="material-icons hw-mat-size">skip_previous</i></button>
+                                <button aria-hidden="true" class="hw-btn-av animation-play" title="Play"><i class="material-icons hw-play-size">play_arrow</i></button>
+                                <button aria-hidden="true" class="hw-btn-av animation-step-forward" title="Skip Forward"><i class="material-icons hw-mat-size">skip_next</i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4 col-md-2 about-btns">
+                        <div class="pull-right">
+                            <button class="btn hw-btn-av hw-mat-icon" data-toggle="modal" data-target=".bs-notes-modal-lg" title="Satellite Notes"><i class="material-icons hw-mat-size" aria-hidden="true">description</i><span class="hw-screen-reader-text">Show Satellite Notes</span></button>
+                            <a target="_blank" href="http://www.bom.gov.au/australia/warnings/index.shtml"><button class="btn hw-btn-av hw-mat-icon"><i class="material-icons hw-mat-size" title="Go to Warnings" aria-hidden="true">warning</i><span class="hw-screen-reader-text">Go to Warnings Page</span></button></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="modal fade bs-notes-modal-lg" tabindex="-1" role="dialog" aria-labelledby="notesLabel" data-backdrop="static">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-body">...</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-lg btn-notes" data-dismiss="modal">Close Notes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="application.min.js"></script>
+        <script>
+            setTimeout(setupView, 1000);
+            
+            function setupView() {
+                document.querySelector("#settingsBoundariesLayer").click()
+                document.querySelector("#settingsCitiesLayer").click()
+                                mapView.setZoom(6);
+                mapView.setCenter(ol.proj.transform([146.354806, -36.610111], "EPSG:4326", "EPSG:3857"))
+
+            }
+        </script>
+    </body>
+</html>
