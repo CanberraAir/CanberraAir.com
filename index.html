@@ -16,15 +16,6 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"
-      defer
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/gh/chartjs/chartjs-plugin-annotation/chartjs-plugin-annotation.min.js"
-      defer
-    ></script>
 
     <style>
       .strike {
@@ -65,6 +56,10 @@
 
       .report-line.notice {
         border-left-color: lightblue;
+      }
+
+      .report-line.dark-notice {
+        border-left-color: #7272ff;
       }
 
       .improving > .rating::after {
@@ -160,18 +155,6 @@
       dd {
         margin-left: 5px;
       }
-
-      .chart-legend {
-        display: inline-block;
-        font-size: 0.6em;
-        margin-left: 10px;
-      }
-
-      .chart-legend > .legend-color {
-        display: inline-block;
-        width: 1em;
-        height: 1em;
-      }
     </style>
   </head>
   <body onLoad="initializeBody()">
@@ -226,44 +209,17 @@
 
               <div class="report-line">
                 Air Quality poor for next 24 hours
-                <span class="time-ago">Sun, Jan 05 1pm</span>
+                <span class="time-ago">Wed, Jan 08 9am</span>
               </div>
 
               <div class="report-line notice">
-                More site updates coming all day. Suggestions welcome!
-                <span class="time-ago">Sun, Jan 05 1pm</span>
+                AQI over time graphs coming later today (hopefully).
+                <span class="time-ago">Wed, Jan 08 9am</span>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="row">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">
-                Graphs
-                <div class="chart-legend">
-                  <span
-                    class="legend-color"
-                    style="background: #636363;"
-                  ></span>
-                  Civic
-                  <span
-                    class="legend-color"
-                    style="background: #f8b2b8;"
-                  ></span>
-                  Florey
-                  <span
-                    class="legend-color"
-                    style="background: #71abd9;"
-                  ></span>
-                  Monash
-                </div>
-              </h5>
-              <div class="chart-container" style="position: relative;">
-                <canvas id="myChart"></canvas>
+              <div class="report-line dark-notice">
+                ACT Health: Smoke expected to return 4pm Wednesday
+                <span class="time-ago">Wed, Jan 08 9am</span>
               </div>
             </div>
           </div>
@@ -282,10 +238,16 @@
                   >
                 </li>
                 <li>
-                  <a
-                    href="https://esa.act.gov.au/cbr-be-emergency-ready/total-fire-bans"
-                    >TOTAL FIRE BAN declared in the ACT - 05/01/2020</a
+                  <a href="https://esa.act.gov.au/update-hospital-hill-fire"
+                    >Hospital Hill Fire under control (Patrol) - 07/01/2020</a
                   >
+                </li>
+                <li>
+                  <a
+                    href="https://health.act.gov.au/public-health-alert/heavy-smoke-and-hot-conditions-act#heavysmoke"
+                  >
+                    Heavy smoke and hot conditions in the ACT.
+                  </a>
                 </li>
               </ul>
             </div>
@@ -800,7 +762,7 @@
           </dl>
 
           <dt>
-            <a name="faq-contributing-aqi">
+            <a name="faq-contributing-aqi" href="#faq-contributing-aqi">
               Can I help with measuring air quality?
             </a>
           </dt>
@@ -824,7 +786,7 @@
           <div class="card-body">
             <h5 class="card-title">Current Satellite View</h5>
             <iframe
-              src="asat-view.html"
+              src="sat-view.html"
               frameborder="0"
               width="650"
               height="600"
@@ -928,10 +890,7 @@
 
           div_el.classList.add(rating_class, delta_class);
           span_el.innerHTML = `${rating} - ${aqi} (${pm25} &micro;g/m<sup>3</sup> PM<sub>2.5</sub>)`; // +
-          // <span class="time-ago">${timeAgo(new Date(datum.time))}</span`;
         }
-
-        render_graphs();
       }
       // !!window.chrome && render_current_aq();
       render_current_aq();
@@ -1026,167 +985,6 @@
 
         return getFormattedDate(date); // 10. January 2017. at 10:20
       }
-
-      function gen_graph_dataset(loc) {
-        let data = gen_graph_data(loc, latest);
-
-        return {
-          label: loc,
-          data,
-          type: "line",
-          pointRadius: 1,
-          fill: false,
-          borderWidth: 2,
-          backgroundColor: COLORS[loc],
-          borderColor: COLORS[loc]
-        };
-      }
-
-      function gen_graph_data(loc_name, latest) {
-        let ts = latest[loc_name].raw.Timestamp,
-          pm = latest[loc_name].raw.PM25;
-
-        return ts.map((t, i) => ({ t, y: pm[i] }));
-      }
-
-      // Civic #636363, Florey #f8b2b8, Monash #71abd9
-      function render_graphs() {
-        if (typeof Chart === "undefined") {
-          setTimeout(render_graphs, 100);
-          return;
-        }
-
-        let ts = latest.Civic.raw.Timestamp,
-          pm = latest.Civic.raw.PM25;
-
-        ctx = document.getElementById("myChart").getContext("2d");
-        cfg = {
-          data: {
-            datasets: [
-              gen_graph_dataset("Civic"),
-              gen_graph_dataset("Florey"),
-              gen_graph_dataset("Monash")
-            ]
-          },
-          options: {
-            animation: {
-              duration: 0
-            },
-            legend: { display: false },
-            legendCallback: c => {
-              return `<div id="legend"></div>`;
-            },
-            scales: {
-              xAxes: [
-                {
-                  type: "time",
-                  ticks: {
-                    autoSkip: true
-                  }
-                }
-              ],
-              yAxes: [
-                {
-                  gridLines: { drawBorder: false },
-                  // gridLines: {
-                  //   drawBorder: false,
-                  //   color: [
-                  //     "pink",
-                  //     "red",
-                  //     "orange",
-                  //     "yellow",
-                  //     "green",
-                  //     "blue",
-                  //     "indigo",
-                  //     "purple"
-                  //   ]
-                  // },
-                  scaleLabel: {
-                    display: true,
-                    labelString: "PM2.5 Concentation"
-                  },
-                  ticks: {
-                    autoSkip: true,
-                    autoSkipPadding: 75
-                  }
-                }
-              ]
-            },
-            annotation: {
-              events: ["mouseenter", "click"],
-              annotations: [
-                {
-                  type: "line",
-                  mode: "horizontal",
-                  scaleID: "y-axis-0",
-                  value: 25,
-                  borderColor: "red",
-                  borderWidth: 2,
-                  borderDash: [8, 8],
-                  onMouseenter(e) {
-                    console.log(e);
-                    window.x = e;
-                  },
-                  onClick(e) {
-                    console.log(e);
-                    window.x = e;
-                  },
-
-                  label: {
-                    content: "HAOOO",
-                    enabled: true,
-                    position: "right"
-                  }
-                }
-              ]
-            }
-          }
-        };
-
-        chart = new Chart(ctx, cfg);
-      }
-
-      function initializeBody() {}
-      /************** For ACT Health Data
-      async function fetch_aq_data() {
-        return fetch(ACT_AQ_URL).then(r => r.json());
-      }
-
-      async function latest_aq_data() {
-        let places = new Set(["Civic", "Florey", "Monash"]);
-        let data = await fetch_aq_data();
-        let latest = {};
-
-        for (var i = data.length - 1; i >= 0 && places.size > 0; i--) {
-          if (places.has(data[i].name)) {
-            latest[data[i].name] = data[i];
-            places.delete(data[i].name);
-          }
-        }
-
-        return latest;
-      }
-
-      async function render_current_aq() {
-        let latest_data = await latest_aq_data();
-
-        window.latest = latest_data;
-        console.log(latest);
-        for (let place in latest_data) {
-          let datum = latest_data[place];
-          let pm25 = parseInt(datum.pm25);
-          let aqi = Math.round(pm25 / 4);
-          let div_el = document.getElementById(`${place}-report`);
-          let span_el = div_el.getElementsByClassName("rating")[0];
-          let rating = aqi_rating(aqi);
-          let rating_class = rating.toLowerCase().replace(/-/g, "-");
-
-          div_el.classList.add(rating_class);
-          span_el.innerHTML = `${rating} - ${aqi} (${pm25} ug/m<sup>3</sup> PM<sub>2.5</sub>)
-          <span class="time-ago">${timeAgo(new Date(datum.thetime))}</span`;
-        }
-      }
-      *************************/
     </script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
