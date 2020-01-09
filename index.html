@@ -257,12 +257,17 @@
               <h5 class="card-title">
                 Graphs
                 <span class="graph-links"
-                  ><a href="#graphs" onclick="graphHours(6, this)">6hr</a> |
-                  <a href="#graphs" onclick="graphHours(12, this)">12hr</a>
+                  ><a href="#graphs" onclick="return graphHours(6, this)"
+                    >6hr</a
+                  >
+                  |
+                  <a href="#graphs" onclick="return graphHours(12, this)"
+                    >12hr</a
+                  >
                   |
                   <a
                     href="#graphs"
-                    onclick="graphHours(24, this)"
+                    onclick="return graphHours(24, this)"
                     class="graph-selected"
                     >24hr</a
                   >
@@ -937,6 +942,16 @@
         Monash: "#71abd9"
       };
 
+      GOOGLE_LOADED = false;
+
+      function draw_graphs() {
+        if (!GOOGLE_LOADED) {
+          setTimeout(draw_graphs, 100);
+          return;
+        }
+        drawAQI();
+      }
+
       async function fetch_latest_aq_data() {
         if (window.location.href.startsWith("file")) {
           let cache = localStorage.getItem("cache");
@@ -989,6 +1004,8 @@
           div_el.classList.add(rating_class, delta_class);
           span_el.innerHTML = `${rating} - ${aqi} (${pm25} &micro;g/m<sup>3</sup> PM<sub>2.5</sub>)`; // +
         }
+
+        draw_graphs();
       }
       // !!window.chrome && render_current_aq();
       render_current_aq();
@@ -1105,7 +1122,7 @@
     ></script>
     <script type="text/javascript">
       function parse_act_date(date) {
-        return new Date(date.replace(" ", "T") + "+10:00");
+        return new Date(date.replace(" ", "T") + "+11:00"); // set to +10:00 for ACT Health data
       }
 
       // These correspond to ACT Health's 7 point scale
@@ -1267,13 +1284,14 @@
           .querySelector(".graph-selected")
           .classList.remove("graph-selected");
         link.classList.add("graph-selected");
+
+        return false;
       }
 
       // Load the Visualization API and the corechart package.
       google.charts.load("current", { packages: ["corechart"] });
 
       // Set a callback to run when the Google Visualization API is loaded.
-      GOOGLE_LOADED = false;
       google.charts.setOnLoadCallback(() => {
         GOOGLE_LOADED = true;
       });
@@ -1283,16 +1301,6 @@
         () => GOOGLE_LOADED && drawAQI(),
         false
       );
-
-      function draw_graphs() {
-        if (!GOOGLE_LOADED) {
-          setTimeout(draw_graphs, 100);
-          return;
-        }
-        drawAQI();
-      }
-
-      draw_graphs();
     </script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
