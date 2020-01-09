@@ -80,26 +80,32 @@
         font-weight: bold;
       }
 
+      .hazardous.rating,
       .hazardous > .rating {
         color: red;
       }
 
+      .good.rating,
       .good > .rating {
         color: #274e13;
       }
 
+      .very-good.rating,
       .very-good > .rating {
         color: #3d85c6;
       }
 
+      .fair.rating,
       .fair > .rating {
         color: #f1c232;
       }
 
+      .poor.rating,
       .poor > .rating {
         color: #e59137;
       }
 
+      .very-poor.rating,
       .very-poor > .rating {
         color: #a64d79;
       }
@@ -155,9 +161,21 @@
       dd {
         margin-left: 5px;
       }
+
+      iframe {
+        border: 0px;
+      }
+
+      .graph-links {
+        font-size: 0.7em;
+      }
+
+      .graph-selected {
+        text-decoration: underline;
+      }
     </style>
   </head>
-  <body onLoad="initializeBody()">
+  <body onLoad="">
     <div class="container-fluid">
       <h1>Bushfire Air Quality <span class="time-ago">ACT & Canberra</span></h1>
       <p>
@@ -207,26 +225,81 @@
             <div class="card-body">
               <h5 class="card-title">Latest News</h5>
 
-              <div class="report-line">
-                Air Quality poor for next 24 hours
-                <span class="time-ago">Wed, Jan 08 9am</span>
+              <div class="report-line very-good">
+                The air is currently clear! Open your windows, start your fans!
+                <span class="time-ago">Thu, Jan 09 2pm</span>
               </div>
 
               <div class="report-line notice">
-                AQI over time graphs coming later today (hopefully).
-                <span class="time-ago">Wed, Jan 08 9am</span>
+                Initial air quality over time graphs online.
+                <span class="time-ago">Thu, Jan 09 2pm</span>
               </div>
 
               <div class="report-line dark-notice">
-                ACT Health: "Smoke expected to return 4pm Wednesday"
-                <span class="time-ago">Wed, Jan 08 9am</span>
+                The ACT Health folks have released
+                <a
+                  href="https://www.health.act.gov.au/about-our-health-system/population-health/environmental-monitoring/monitoring-and-regulating-air-7"
+                  >a prototype real hourly data graph.</a
+                >
+                Great job guys!
+                <span class="time-ago">Thu, Jan 09 2pm</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      <a name="graphs"></a>
       <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">
+                Graphs
+                <span class="graph-links"
+                  ><a href="#graphs" onclick="graphHours(6, this)">6hr</a> |
+                  <a href="#graphs" onclick="graphHours(12, this)">12hr</a>
+                  |
+                  <a
+                    href="#graphs"
+                    onclick="graphHours(24, this)"
+                    class="graph-selected"
+                    >24hr</a
+                  >
+                </span>
+              </h5>
+              <!-- <div id="chart-header">tesxt</div> -->
+              <div id="chart-div"></div>
+              <style>
+                .google-visualization-tooltip {
+                  width: min-content !important;
+                  height: min-content !important;
+                }
+
+                .google-visualization-tooltip-item-list {
+                  margin: 0.5em 0 0.5em 0;
+                }
+
+                .google-visualization-tooltip-item {
+                  white-space: nowrap;
+                  margin: 0;
+                }
+
+                .google-visualization-tooltip-square {
+                  width: 1em;
+                  height: 1em;
+                  vertical-align: middle;
+                  margin: 0;
+                }
+
+                .google-visualization-tooltip-item-list
+                  .google-visualization-tooltip-item:first-child {
+                  margin: 0.5em 0em 0.5em 0em;
+                }
+              </style>
+            </div>
+          </div>
+        </div>
         <div class="col-md-6">
           <div class="card">
             <div class="card-body">
@@ -244,7 +317,7 @@
                 </li>
                 <li>
                   <a
-                    href="https://health.act.gov.au/public-health-alert/heavy-smoke-and-hot-conditions-act#heavysmoke"
+                    href="https://health.act.gov.au/public-health-alert/heavy-smoke-and-hot-conditions-act"
                   >
                     Heavy smoke and hot conditions in the ACT.
                   </a>
@@ -253,13 +326,24 @@
             </div>
           </div>
         </div>
+      </div>
 
+      <div class="row">
         <a name="useful-links"></a>
         <div class="col-md-6">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Useful Links</h5>
               <ul>
+                <li>
+                  <a
+                    href="https://www.health.act.gov.au/about-our-health-system/population-health/environmental-monitoring/monitoring-and-regulating-air-7"
+                  >
+                    ACT Health PM2.5 - Hourly Data<span class="text-secondary"
+                      >: Hourly and 24 hour PM2.5 concentrations.</span
+                    >
+                  </a>
+                </li>
                 <li>
                   <a
                     href="https://www.rfs.nsw.gov.au/fire-information/fires-near-me"
@@ -355,7 +439,7 @@
                 </div>
                 <div>
                   <span class="aqi-desc-block">34-66<br />Good</span>
-                  <span style="color: rgb(241, 194, 50); font-size: xx-large;"
+                  <span style="color: rgb(39, 78, 19); font-size: xx-large;"
                     >●</span
                   >
                 </div>
@@ -794,13 +878,13 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Current Satellite View</h5>
-            <iframe
+            <!-- <iframe
               src="sat-view.html"
               frameborder="0"
               width="650"
               height="600"
               style="border:1px solid black;"
-            ></iframe>
+            ></iframe> -->
           </div>
         </div>
       </div>
@@ -831,6 +915,11 @@
     </div>
 
     <script>
+      // --- NOTE TO ANYONE READING THIS CODE ---
+      // Yes, I know it's a mess. This code was written for a need, for speed,
+      // and may eventually (hopefully) be cleaned up... but we all know about
+      // the best laid plans of 'roos and men...
+
       ACT_AQ_URL =
         "https://www.data.act.gov.au/api/id/rr3g-auih.json?$query=SELECT%20%60datetime%60%20AS%20thetime%2C%20%60name%60%20AS%20name%2C%20AVG%28%60aqi_pm2_5%60%29%20AS%20pm25%20WHERE%20%60datetime%60%20%3E%3D%20%272020-01-03%27%20AND%20%60datetime%60%20%3C%20%272020-01-04%27%20AND%20%28%20%60name%60%20%3D%20%27Monash%27%20OR%20%60name%60%20%3D%20%27Civic%27%20OR%20%60name%60%20%3D%20%27Florey%27%20%29%20AND%20%60datetime%60%20IN%20%28%20%272020-01-03T00%3A00%3A00.000%27%2C%20%272020-01-03T01%3A00%3A00.000%27%2C%20%272020-01-03T02%3A00%3A00.000%27%2C%20%272020-01-03T03%3A00%3A00.000%27%2C%20%272020-01-03T04%3A00%3A00.000%27%2C%20%272020-01-03T05%3A00%3A00.000%27%2C%20%272020-01-03T06%3A00%3A00.000%27%2C%20%272020-01-03T07%3A00%3A00.000%27%2C%20%272020-01-03T08%3A00%3A00.000%27%2C%20%272020-01-03T09%3A00%3A00.000%27%2C%20%272020-01-03T10%3A00%3A00.000%27%2C%20%272020-01-03T11%3A00%3A00.000%27%20%29%20AND%20%60name%60%20IN%20%28%27Civic%27%2C%20%27Florey%27%2C%20%27Monash%27%29%20GROUP%20BY%20%60datetime%60%2C%20name%20ORDER%20BY%20pm25%20DESC%20NULL%20LAST%20LIMIT%201001";
 
@@ -903,6 +992,7 @@
       }
       // !!window.chrome && render_current_aq();
       render_current_aq();
+
       function aqi_rating(aqi) {
         if (aqi >= 200) return "Hazardous";
         else if (aqi >= 150) return "Very Poor";
@@ -927,6 +1017,19 @@
         "November",
         "December"
       ];
+
+      function date_format(date, include_daynum = true) {
+        let [day, month, dnum, year] = date.toDateString().split(" ");
+
+        let time = date
+          .toLocaleTimeString()
+          .replace(":00 ", "")
+          .toLowerCase();
+
+        return include_daynum
+          ? `${day}, ${month} ${dnum} ${time}`
+          : `${day} ${time}`;
+      }
 
       function getFormattedDate(
         date,
@@ -994,6 +1097,202 @@
 
         return getFormattedDate(date); // 10. January 2017. at 10:20
       }
+    </script>
+
+    <script
+      type="text/javascript"
+      src="https://www.gstatic.com/charts/loader.js"
+    ></script>
+    <script type="text/javascript">
+      function parse_act_date(date) {
+        return new Date(date.replace(" ", "T") + "+10:00");
+      }
+
+      // These correspond to ACT Health's 7 point scale
+      // https://www.health.act.gov.au/about-our-health-system/population-health/environmental-monitoring/monitoring-and-regulating-air-0
+      // THRESHOLDS = [
+      //   ["Good", 0, "#538135"],
+      //   ["Standard", 9, "#2f5496"],
+      //   ["Sensitive", 26, "#ffc000"],
+      //   ["All", 40, "#ff6600"],
+      //   ["Very", 107, "#ff3333"],
+      //   ["High", 180, "#bb6528"],
+      //   ["Extreme", 250, "#000000"]
+      // ];
+
+      // We'll use our standard AQI numbers for now, until the differences are clarified
+      THRESHOLDS = [
+        ["Very Good", 0, "#3d85c6"],
+        ["Good", 34 / 4, "#274e13"],
+        ["Fair", 67 / 4, "#f1c232"],
+        ["Poor", 100 / 4, "#e59137"],
+        ["Very Poor", 150 / 4, "#a64d79"],
+        ["Hazardous", 200 / 4, "#ff0000"]
+      ];
+
+      LOC_COLORS = {
+        Civic: "#636363",
+        Florey: "#f8b2b8",
+        Monash: "#71abd9"
+      };
+
+      GRAPH_HOUR_RANGE = 6; // hours: controls data range generated for graph
+
+      THRESHOLD_RANGE_VALUES = THRESHOLDS.map(r => [r[1], ""]).flatMap(n => n);
+
+      THRESHOLD_SERIES = {};
+      thresh_start_ind = 3;
+
+      THRESHOLDS.forEach(r => {
+        THRESHOLD_SERIES[thresh_start_ind++] = {
+          visibleInLegend: false,
+          enableInteractivity: false,
+          // tooltip: "none",
+          lineDashStyle: [5, 5],
+          color: r[2]
+        };
+      });
+
+      function generate_graph_tooltip(val) {
+        let rating = aqi_rating(val * 4);
+        let rating_class = rating.toLowerCase().replace(/ /g, "-");
+
+        return `${val} - <span class="rating ${rating_class}">${rating}</span>`;
+      }
+
+      function generate_graph_data(offset, range) {
+        let aqi_data = latest;
+
+        let raw_pm25 = ["Civic", "Florey", "Monash"].map(l =>
+          aqi_data[l].raw.PM25.map(parseFloat).slice(
+            offset,
+            range && offset + range
+          )
+        );
+
+        let max = Math.max(...raw_pm25.map(l => Math.max(...l)));
+
+        let threshold_ranges = [];
+        THRESHOLDS.some(t => {
+          threshold_ranges.push(t[1], "");
+
+          if (t[1] > max) return true; // break
+        });
+
+        let data = aqi_data.Civic.raw.Timestamp.slice(
+          offset,
+          range && offset + range
+        ).map((n, i) =>
+          [
+            parse_act_date(n),
+            raw_pm25[0][i], // Civic
+            generate_graph_tooltip(raw_pm25[0][i]),
+            raw_pm25[1][i], // Florey
+            generate_graph_tooltip(raw_pm25[1][i]),
+            raw_pm25[2][i], // Monash
+            generate_graph_tooltip(raw_pm25[2][i])
+          ].concat(threshold_ranges)
+        );
+
+        return [data, threshold_ranges, max];
+      }
+
+      function drawAQI() {
+        data = new google.visualization.DataTable();
+        data.addColumn("datetime", "Time");
+        data.addColumn("number", "Civic");
+        data.addColumn({ type: "string", role: "tooltip", p: { html: true } });
+        data.addColumn("number", "Florey");
+        data.addColumn({ type: "string", role: "tooltip", p: { html: true } });
+        data.addColumn("number", "Monash");
+        data.addColumn({ type: "string", role: "tooltip", p: { html: true } });
+
+        let [aqi_data, ranges, max_pm25] = generate_graph_data(
+          24 - GRAPH_HOUR_RANGE,
+          GRAPH_HOUR_RANGE
+        );
+
+        for (let i = 0; i < ranges.length; i += 2) {
+          data.addColumn("number", ranges[i]);
+          data.addColumn({ type: "string", role: "tooltip" });
+        }
+
+        data.addRows(aqi_data);
+
+        data_series = {
+          0: { color: LOC_COLORS.Civic },
+          1: { color: LOC_COLORS.Florey },
+          2: { color: LOC_COLORS.Monash }
+        };
+
+        let date_title = `${date_format(aqi_data[0][0], false)} - ${date_format(
+          aqi_data.slice(-1)[0][0],
+          false
+        )}`;
+
+        options = {
+          title: "PM2.5: " + date_title,
+          seriesType: "line",
+          focusTarget: "category",
+          legend: { position: "top" },
+          series: Object.assign(data_series, THRESHOLD_SERIES),
+          chartArea: {
+            width: "95%",
+            left: 40
+          },
+          vAxis: {
+            title: "PM2.5 μm/m³"
+          },
+          tooltip: { isHtml: true }
+        };
+
+        // limit chart height to next higher cutoff range
+        let max_threshold = ranges.slice(-2, -1)[0];
+
+        if (max_threshold > max_pm25)
+          options.vAxis.viewWindow = { max: max_threshold + 1 };
+
+        chart = new google.visualization.LineChart(
+          document.getElementById("chart-div")
+        );
+
+        chart.draw(data, options);
+      }
+
+      function graphHours(hours_back, link) {
+        GRAPH_HOUR_RANGE = hours_back;
+        drawAQI();
+
+        document
+          .querySelector(".graph-selected")
+          .classList.remove("graph-selected");
+        link.classList.add("graph-selected");
+      }
+
+      // Load the Visualization API and the corechart package.
+      google.charts.load("current", { packages: ["corechart"] });
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      GOOGLE_LOADED = false;
+      google.charts.setOnLoadCallback(() => {
+        GOOGLE_LOADED = true;
+      });
+
+      window.addEventListener(
+        "resize",
+        () => GOOGLE_LOADED && drawAQI(),
+        false
+      );
+
+      function draw_graphs() {
+        if (!GOOGLE_LOADED) {
+          setTimeout(draw_graphs, 100);
+          return;
+        }
+        drawAQI();
+      }
+
+      draw_graphs();
     </script>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
