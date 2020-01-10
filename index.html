@@ -1023,13 +1023,22 @@
           new Date(last_update),
           false
         );
+        let next_update = last_update + 60 * 60 * 1000
         document.getElementById("next-update").innerHTML = date_format(
-          new Date(last_update + 60 * 60 * 1000),
+          new Date(next_update),
           false
         );
+
+        // in order to not stress out airrater a random amount of time btween 60s to 120s is added.
+        let ms_to_next_update = ( next_update - Date.now() ) + randomNumber(60,120) * 1000
+        setTimeout(render_current_aq, ms_to_next_update);
         draw_graphs();
       }
       // !!window.chrome && render_current_aq();
+      function randomNumber(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
       render_current_aq();
 
       function aqi_rating(aqi) {
