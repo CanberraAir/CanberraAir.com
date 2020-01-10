@@ -173,6 +173,32 @@
       .graph-selected {
         text-decoration: underline;
       }
+
+      .google-visualization-tooltip {
+        width: min-content !important;
+        height: min-content !important;
+      }
+
+      .google-visualization-tooltip-item-list {
+        margin: 0.5em 0 0.5em 0;
+      }
+
+      .google-visualization-tooltip-item {
+        white-space: nowrap;
+        margin: 0;
+      }
+
+      .google-visualization-tooltip-square {
+        width: 1em;
+        height: 1em;
+        vertical-align: middle;
+        margin: 0;
+      }
+
+      .google-visualization-tooltip-item-list
+        .google-visualization-tooltip-item:first-child {
+        margin: 0.5em 0em 0.5em 0em;
+      }
     </style>
   </head>
   <body onLoad="">
@@ -185,10 +211,8 @@
         <a href="#contact">Contact</a>
       </p>
 
-      <a name="current-aq"></a>
-      <div class="row">
+      <div id="current-aq" class="row">
         <div class="col-md-6">
-          <a name="current-aq"></a>
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">
@@ -219,8 +243,7 @@
           </div>
         </div>
 
-        <a name="news"></a>
-        <div class="col-md-6">
+        <div id="news" class="col-md-6">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Latest News</h5>
@@ -257,8 +280,7 @@
         </div>
       </div>
 
-      <a name="graphs"></a>
-      <div class="row">
+      <div id="graphs" class="row">
         <div class="col-md-6">
           <div class="card">
             <div class="card-body">
@@ -283,33 +305,6 @@
               </h5>
               <!-- <div id="chart-header">tesxt</div> -->
               <div id="chart-div"></div>
-              <style>
-                .google-visualization-tooltip {
-                  width: min-content !important;
-                  height: min-content !important;
-                }
-
-                .google-visualization-tooltip-item-list {
-                  margin: 0.5em 0 0.5em 0;
-                }
-
-                .google-visualization-tooltip-item {
-                  white-space: nowrap;
-                  margin: 0;
-                }
-
-                .google-visualization-tooltip-square {
-                  width: 1em;
-                  height: 1em;
-                  vertical-align: middle;
-                  margin: 0;
-                }
-
-                .google-visualization-tooltip-item-list
-                  .google-visualization-tooltip-item:first-child {
-                  margin: 0.5em 0em 0.5em 0em;
-                }
-              </style>
             </div>
           </div>
         </div>
@@ -348,8 +343,7 @@
       </div>
 
       <div class="row">
-        <a name="useful-links"></a>
-        <div class="col-md-6">
+        <div id="useful-links" class="col-md-6">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Useful Links</h5>
@@ -426,14 +420,14 @@
         </div>
       </div>
 
-      <a name="faq"></a>
+      <a id="faq"></a>
       <div class="row">
         <div class="col-sm">
           <h3>FAQ</h3>
           <h5>Basic Air Quality Info</h5>
           <dl>
             <dt>
-              <a name="faq-aqi" href="#faq-aqi"
+              <a id="faq-aqi" href="#faq-aqi"
                 >What is an AQI (Air Quality Index)?</a
               >
             </dt>
@@ -497,7 +491,7 @@
             </dd>
 
             <dt>
-              <a name="faq-pm25" href="#faq-pm25">What are PM2.5 particles?</a>
+              <a id="faq-pm25" href="#faq-pm25">What are PM2.5 particles?</a>
             </dt>
             <dd>
               <p>
@@ -519,7 +513,7 @@
             </dd>
 
             <dt>
-              <a name="faq-pm25-danger" href="#faq-pm25-danger"
+              <a id="faq-pm25-danger" href="#faq-pm25-danger"
                 >Why are PM2.5 particles dangerous?</a
               >
             </dt>
@@ -533,7 +527,7 @@
             </dd>
 
             <dt>
-              <a name="faq-pm25-risk-groups" href="#faq-pm25-risk-groups"
+              <a id="faq-pm25-risk-groups" href="#faq-pm25-risk-groups"
                 >Who is most at risk from PM2.5 particles?</a
               >
             </dt>
@@ -543,7 +537,7 @@
             </dd>
 
             <dt>
-              <a name="faq-pm25-not-risk-group" href="#faq-pm25-not-risk-group">
+              <a id="faq-pm25-not-risk-group" href="#faq-pm25-not-risk-group">
                 If I'm not in an "at risk" group, is it okay for me to breathe
                 the smoke?</a
               >
@@ -555,7 +549,7 @@
             </dd>
 
             <dt>
-              <a name="faq-no-smell-smoke" href="#faq-no-smell-smoke">
+              <a id="faq-no-smell-smoke" href="#faq-no-smell-smoke">
                 If I can't smell smoke, or the air looks clear, does that mean
                 the air is safe?</a
               >
@@ -567,10 +561,7 @@
             </dd>
 
             <dt>
-              <a
-                name="faq-aircon-building-safe"
-                href="#faq-aircon-building-safe"
-              >
+              <a id="faq-aircon-building-safe" href="#faq-aircon-building-safe">
                 If a building has their aircon on, does that mean the air is
                 safe?</a
               >
@@ -586,7 +577,7 @@
             </dd>
 
             <dt>
-              <a name="faq-aqi-pm25" href="#faq-aqi-pm25">
+              <a id="faq-aqi-pm25" href="#faq-aqi-pm25">
                 What is the relationship between AQI and PM2.5 concentration?</a
               >
             </dt>
@@ -600,7 +591,7 @@
             </dd>
 
             <dt>
-              <a name="faq-differing-aqi" href="#faq-differing-aqi">
+              <a id="faq-differing-aqi" href="#faq-differing-aqi">
                 Why do other apps and site seemingly report different AQI
                 numbers?</a
               >
@@ -639,7 +630,7 @@
             </dd>
 
             <dt>
-              <a name="faq-hourly-reporting" href="#faq-hourly-reporting"
+              <a id="faq-hourly-reporting" href="#faq-hourly-reporting"
                 >Wait, but the ACT Health site says their numbers are from the
                 last hour?</a
               >
@@ -670,7 +661,7 @@
           <h5>Dealing With Poor Air</h5>
           <dl>
             <dt>
-              <a name="faq-deal-with-smoke" href="#faq-deal-with-smoke"
+              <a id="faq-deal-with-smoke" href="#faq-deal-with-smoke"
                 >How can I deal with the smoke?</a
               >
             </dt>
@@ -686,7 +677,7 @@
             </dd>
 
             <dt>
-              <a name="faq-respirator" href="#faq-respirator"
+              <a id="faq-respirator" href="#faq-respirator"
                 >What kind of mask do I need?</a
               >
             </dt>
@@ -699,14 +690,14 @@
             </dd>
 
             <dt>
-              <a name="faq-respirator-children" href="#faq-respirator"
+              <a id="faq-respirator-children" href="#faq-respirator"
                 >Can children wear a respirator mask?</a
               >
             </dt>
             <dd></dd>
 
             <dt>
-              <a name="faq-where-get-masks" href="#faq-where-get-masks"
+              <a id="faq-where-get-masks" href="#faq-where-get-masks"
                 >Where can I get good masks?</a
               >
             </dt>
@@ -724,7 +715,7 @@
             </dd>
 
             <dt>
-              <a name="faq-air-purifier" href="#faq-air-purifier"
+              <a id="faq-air-purifier" href="#faq-air-purifier"
                 >What is an air purifier?</a
               >
             </dt>
@@ -734,7 +725,7 @@
             </dd>
 
             <dt>
-              <a name="faq-hepa-filter" href="#faq-hepa-filter"
+              <a id="faq-hepa-filter" href="#faq-hepa-filter"
                 >What kind of air purifier do I need for smoke?</a
               >
             </dt>
@@ -747,14 +738,14 @@
             </dd>
 
             <dt>
-              <a name="faq-humidifier" href="#faq-humidifier"
+              <a id="faq-humidifier" href="#faq-humidifier"
                 >Can a humidifer work to purify my air?</a
               >
             </dt>
             <dd>Maybe slightly, but it's not significant on its own.</dd>
 
             <dt>
-              <a name="faq-air-purifier-power" href="#faq-air-purifier-power"
+              <a id="faq-air-purifier-power" href="#faq-air-purifier-power"
                 >How powerful should my air purifier be?</a
               >
             </dt>
@@ -784,7 +775,7 @@
             </dd>
 
             <dt>
-              <a name="faq-purifier-big-room" href="#faq-purifier-big-room"
+              <a id="faq-purifier-big-room" href="#faq-purifier-big-room"
                 >What if my house/room is too big for my purifier?</a
               >
             </dt>
@@ -795,7 +786,7 @@
             </dd>
 
             <dt>
-              <a name="faq-airtight-house" href="#faq-airtight-house"
+              <a id="faq-airtight-house" href="#faq-airtight-house"
                 >How can I make my house more airtight?</a
               >
             </dt>
@@ -808,7 +799,7 @@
             </dd>
 
             <dt>
-              <a name="faq-no-purifier" href="#faq-no-purifier"
+              <a id="faq-no-purifier" href="#faq-no-purifier"
                 >What if I don't have an air purifier?</a
               >
             </dt>
@@ -817,7 +808,7 @@
                 <li>
                   If you have ducted heating, you can put your heater on FAN
                   ONLY setting. While most heating filters aren't
-                  <a name="#faq-hepa-filter">HEPA rated</a>, they can still make
+                  <a href="#faq-hepa-filter">HEPA rated</a>, they can still make
                   things a little better.
                 </li>
                 <li>
@@ -833,7 +824,7 @@
             </dd>
 
             <dt>
-              <a name="faq-evaporative-cooler" href="#faq-evaporative-cooler"
+              <a id="faq-evaporative-cooler" href="#faq-evaporative-cooler"
                 >Should I use an evaporative cooler during heavy smoke?</a
               >
             </dt>
@@ -843,7 +834,7 @@
             </dd>
 
             <dt>
-              <a name="faq-monitoring-aqi" href="#faq-monitoring-aqi"
+              <a id="faq-monitoring-aqi" href="#faq-monitoring-aqi"
                 >How can I monitor my own home / environment's air quality?</a
               >
             </dt>
@@ -872,7 +863,7 @@
             </dd>
 
             <dt>
-              <a name="faq-aqi-app" href="#faq-aqi-app"
+              <a id="faq-aqi-app" href="#faq-aqi-app"
                 >Can I get air quality data in an app?</a
               >
             </dt>
@@ -881,29 +872,30 @@
               hourly air quality readings. You can save your location and have
               the app notify you when the air starts getting bad.
             </dd>
+
+            <dt>
+              <a id="faq-contributing-aqi" href="#faq-contributing-aqi">
+                Can I help with measuring air quality?
+              </a>
+            </dt>
+            <dd>
+              <p>
+                Yes! The
+                <a href="https://www2.purpleair.com">PurpleAir</a> service makes
+                air quality sensors you can install around your home. Data from
+                here shows up on their map in real-time, available to all. If
+                folks all around the ACT did this, we could have accurate AQI
+                numbers for the entire state!
+              </p>
+
+              <p>
+                The <a href="https://aqicn.org/gaia/">Aqicn network</a> also has
+                some good monitoring stations you can set up, though there
+                aren't any running at present in the ACT, maybe you can be the
+                first!
+              </p>
+            </dd>
           </dl>
-
-          <dt>
-            <a name="faq-contributing-aqi" href="#faq-contributing-aqi">
-              Can I help with measuring air quality?
-            </a>
-          </dt>
-          <dd>
-            <p>
-              Yes! The
-              <a href="https://www2.purpleair.com">PurpleAir</a> service makes
-              air quality sensors you can install around your home. Data from
-              here shows up on their map in real-time, available to all. If
-              folks all around the ACT did this, we could have accurate AQI
-              numbers for the entire state!
-            </p>
-
-            <p>
-              The <a href="https://aqicn.org/gaia/">Aqicn network</a> also has
-              some good monitoring stations you can set up, though there aren't
-              any running at present in the ACT, maybe you can be the first!
-            </p>
-          </dd>
 
           <h5>ACT Fire Status</h5>
         </div>
@@ -912,9 +904,8 @@
 
     <div class="row">
       <div class="col-md-6">
-        <div class="card">
+        <div id="contact" class="card">
           <div class="card-body">
-            <a name="contact"></a>
             <h5 class="card-title">Contact</h5>
             Twitter: <a href="https://twitter.com/CanberraAir">@CanberraAir</a
             ><br />
@@ -1151,11 +1142,8 @@
       }
     </script>
 
-    <script
-      type="text/javascript"
-      src="https://www.gstatic.com/charts/loader.js"
-    ></script>
-    <script type="text/javascript">
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
       // These correspond to ACT Health's 7 point scale
       // https://www.health.act.gov.au/about-our-health-system/population-health/environmental-monitoring/monitoring-and-regulating-air-0
       // THRESHOLDS = [
