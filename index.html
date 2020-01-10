@@ -182,7 +182,6 @@
         <a href="#current-aq">Current Air Quality</a> |
         <a href="#faq">Air Quality FAQ</a> | <a href="#news">News</a> |
         <a href="#useful-links">Useful Links</a> |
-        <a href="#satellite-view">Satellite View</a> |
         <a href="#contact">Contact</a>
       </p>
 
@@ -904,23 +903,7 @@
       </div>
     </div>
 
-    <a name="satellite-view"></a>
     <div class="row">
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Current Satellite View</h5>
-            <iframe
-              src="sat-view.html"
-              frameborder="0"
-              width="650"
-              height="600"
-              style="border:1px solid black;"
-            ></iframe>
-          </div>
-        </div>
-      </div>
-
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
@@ -1017,7 +1000,6 @@
 
         window.latest = latest_data;
         let last_update = null;
-        // console.log(latest);
 
         for (let place in latest_data) {
           let datum = latest_data[place];
@@ -1031,7 +1013,7 @@
 
           div_el.classList.add(rating_class, delta_class);
           span_el.innerHTML = `${rating} - ${aqi} (${pm25} &micro;g/m<sup>3</sup> PM<sub>2.5</sub>)`; // +
-          console.log("-----------");
+
           last_update = Math.max(last_update, parse_act_date(datum.time));
         }
 
