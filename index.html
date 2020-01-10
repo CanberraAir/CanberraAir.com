@@ -1031,7 +1031,8 @@
 
         // in order to not stress out airrater a random amount of time btween 60s to 120s is added.
         let ms_to_next_update = ( next_update - Date.now() ) + randomNumber(60,120) * 1000
-        setTimeout(render_current_aq, ms_to_next_update);
+        // added a minumum delay of 1 minute here as airrater.org does not always update at x:55 exactly.
+        setTimeout(render_current_aq, Math.max(ms_to_next_update, 60*1000));
         draw_graphs();
       }
       // !!window.chrome && render_current_aq();
