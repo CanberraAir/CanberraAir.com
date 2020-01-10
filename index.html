@@ -195,7 +195,8 @@
               <h5 class="card-title">
                 Current Air Quality
                 <span class="time-ago"
-                  >(updated 55 minutes past every hour)</span
+                  >(last update: <span id="last-update"></span>, next update:
+                  <span id="next-update"></span>)</span
                 >
               </h5>
               <div class="current-status">
@@ -311,6 +312,12 @@
               <h5 class="card-title">ACT Government Notices</h5>
               <ul>
                 <li>
+                  <a
+                    href="https://esa.act.gov.au/total-fire-ban-friday-10-january-2020a"
+                    >TOTAL FIRE BAN in Place Friday, Jan 10</a
+                  >
+                </li>
+                <li>
                   <a href="https://esa.act.gov.au/state-alert-declared-act-0"
                     >State of Alert declared for ACT</a
                   >
@@ -340,6 +347,14 @@
             <div class="card-body">
               <h5 class="card-title">Useful Links</h5>
               <ul>
+                <li>
+                  <a
+                    href="https://www.rfs.nsw.gov.au/__data/assets/image/0017/161108/Potential-fire-spread-prediction-incl-embers-A0.png"
+                  ></a>
+                  <span class="text-secondary"
+                    >: Fire spread prediction map Fri, Jan 10</span
+                  >
+                </li>
                 <li>
                   <a
                     href="https://www.health.act.gov.au/about-our-health-system/population-health/environmental-monitoring/monitoring-and-regulating-air-7"
@@ -624,13 +639,25 @@
               >
             </dt>
             <dd>
-              I've had many folks write in to point this out. While they say
-              their PM2.5 readings are hourly, they are actually the 24 hour
-              rolling average. You can verify this yourself by multiplying their
-              PM2.5 numbers by 4, and getting the exact "24 hour rolling average
-              AQI" value (ie. PM2.5 * 4 = AQI_PM2.5). It took me quite a while
-              to get the real hourly data. (I asked them directly, and they
-              declined to publish it themselves.)
+              <p>
+                I've had many folks write in to point this out. While they say
+                their PM2.5 readings are hourly, they are actually the 24 hour
+                rolling average. You can verify this yourself by multiplying
+                their PM2.5 numbers by 4, and getting the exact "24 hour rolling
+                average AQI" value (ie. PM2.5 * 4 = AQI_PM2.5). It took me quite
+                a while to get the real hourly data. (I asked them directly, and
+                they declined to publish it themselves.)
+              </p>
+
+              <p>
+                <b>Update:</b> The ACT Health team has started publishing actual
+                hourly numbers
+                <a
+                  href="https://www.health.act.gov.au/about-our-health-system/population-health/environmental-monitoring/monitoring-and-regulating-air-7"
+                  >on this page.</a
+                >
+                The data are accurate, and timely.
+              </p>
             </dd>
           </dl>
 
@@ -883,13 +910,13 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">Current Satellite View</h5>
-            <!-- <iframe
+            <iframe
               src="sat-view.html"
               frameborder="0"
               width="650"
               height="600"
               style="border:1px solid black;"
-            ></iframe> -->
+            ></iframe>
           </div>
         </div>
       </div>
@@ -989,6 +1016,7 @@
         let latest_data = await fetch_latest_aq_data();
 
         window.latest = latest_data;
+        let last_update = null;
         // console.log(latest);
 
         for (let place in latest_data) {
@@ -1003,8 +1031,18 @@
 
           div_el.classList.add(rating_class, delta_class);
           span_el.innerHTML = `${rating} - ${aqi} (${pm25} &micro;g/m<sup>3</sup> PM<sub>2.5</sub>)`; // +
+          console.log("-----------");
+          last_update = Math.max(last_update, parse_act_date(datum.time));
         }
 
+        document.getElementById("last-update").innerHTML = date_format(
+          new Date(last_update),
+          false
+        );
+        document.getElementById("next-update").innerHTML = date_format(
+          new Date(last_update + 60 * 60 * 1000),
+          false
+        );
         draw_graphs();
       }
       // !!window.chrome && render_current_aq();
@@ -1034,6 +1072,10 @@
         "November",
         "December"
       ];
+
+      function parse_act_date(date) {
+        return new Date(date.replace(" ", "T") + "+11:00"); // set to +10:00 for ACT Health data
+      }
 
       function date_format(date, include_daynum = true) {
         let [day, month, dnum, year] = date.toDateString().split(" ");
@@ -1121,10 +1163,6 @@
       src="https://www.gstatic.com/charts/loader.js"
     ></script>
     <script type="text/javascript">
-      function parse_act_date(date) {
-        return new Date(date.replace(" ", "T") + "+11:00"); // set to +10:00 for ACT Health data
-      }
-
       // These correspond to ACT Health's 7 point scale
       // https://www.health.act.gov.au/about-our-health-system/population-health/environmental-monitoring/monitoring-and-regulating-air-0
       // THRESHOLDS = [
