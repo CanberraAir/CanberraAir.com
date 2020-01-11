@@ -966,11 +966,6 @@
 
       let latest = {};
       async function fetch_latest_aq_data() {
-        if (!window.location.href.startsWith("file")) {
-          let cache = localStorage.getItem("cache");
-          if (cache) return JSON.parse(cache);
-        }
-
         latest = {};
 
         for (let loc in LOCS) {
@@ -991,10 +986,6 @@
             improving: vals.PM25[l - 2] > vals.PM25[l - 1],
             raw: vals
           };
-        }
-
-        if (!window.location.href.startsWith("file")) {
-          localStorage.setItem("cache", JSON.stringify(latest));
         }
 
         return latest;
