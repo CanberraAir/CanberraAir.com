@@ -1031,6 +1031,18 @@
       }
       // !!window.chrome && render_current_aq();
       render_current_aq();
+      
+      // Update AQ at 56 past the hour
+      async function job_update_aq()
+      {
+        var mins = new Date().getMinutes();
+        if(mins == "56")
+        {
+          render_current_aq();
+          await new Promise(r => setTimeout(r, 30000));
+        }
+      }
+      setInterval(job_update_aq, 30000);
 
       function aqi_rating(aqi) {
         if (aqi >= 200) return "Hazardous";
