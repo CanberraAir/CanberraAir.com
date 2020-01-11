@@ -377,7 +377,7 @@
                     href="https://www.facebook.com/groups/MyAirQualityAustralia/"
                     >My Air Quality Australia FB Group</a
                   ><span class="text-secondary"
-                    >: Useful discussion, tips, Q&A, home air quality.</span
+                    >: Useful discussion, tips, Q&amp;A, home air quality.</span
                   >
                 </li>
                 <li>
@@ -964,13 +964,14 @@
         drawAQI();
       }
 
+      let latest = {};
       async function fetch_latest_aq_data() {
-        if (window.location.href.startsWith("file")) {
+        if (!window.location.href.startsWith("file")) {
           let cache = localStorage.getItem("cache");
           if (cache) return JSON.parse(cache);
         }
 
-        let latest = {};
+        latest = {};
 
         for (let loc in LOCS) {
           let query = AIRRATER_URL.replace("_LAT_", LOCS[loc][0]).replace(
@@ -992,7 +993,9 @@
           };
         }
 
-        localStorage.setItem("cache", JSON.stringify(latest));
+        if (!window.location.href.startsWith("file")) {
+          localStorage.setItem("cache", JSON.stringify(latest));
+        }
 
         return latest;
       }
@@ -1173,8 +1176,8 @@
       };
 
       GRAPH_HOUR_RANGE = 6; // hours: controls data range generated for graph
-
-      THRESHOLD_RANGE_VALUES = THRESHOLDS.map(r => [r[1], ""]).flatMap(n => n);
+      
+      //THRESHOLD_RANGE_VALUES = THRESHOLDS.map(r => [r[1], ""]).flatMap(n => n);
 
       THRESHOLD_SERIES = {};
       thresh_start_ind = 3;
