@@ -377,7 +377,7 @@
                     href="https://www.facebook.com/groups/MyAirQualityAustralia/"
                     >My Air Quality Australia FB Group</a
                   ><span class="text-secondary"
-                    >: Useful discussion, tips, Q&A, home air quality.</span
+                    >: Useful discussion, tips, Q&amp;A, home air quality.</span
                   >
                 </li>
                 <li>
@@ -967,13 +967,12 @@
         drawAQI();
       }
 
+      var latest = {};
       async function fetch_latest_aq_data() {
         if (window.location.href.startsWith("file")) {
           let cache = localStorage.getItem("cache");
-          if (cache) return JSON.parse(cache);
+          if (cache) return (latest = JSON.parse(cache));
         }
-
-        let latest = {};
 
         for (let loc in LOCS) {
           let query = AIRRATER_URL.replace("_LAT_", LOCS[loc][0]).replace(
@@ -1003,7 +1002,6 @@
       async function render_current_aq() {
         let latest_data = await fetch_latest_aq_data();
 
-        window.latest = latest_data;
         let last_update = null;
 
         for (let place in latest_data) {
@@ -1032,16 +1030,14 @@
           new Date(last_update + 60 * 60 * 1000),
           false
         );
+
         draw_graphs();
 
         return last_update;
       }
 
       async function periodic_aq_updates() {
-        if (
-          typeof latest === "undefined" ||
-          latest.last_update < new Date() - AN_HOUR
-        ) {
+        if (!latest.last_update || latest.last_update < new Date() - AN_HOUR) {
           await render_current_aq();
           setTimeout(periodic_aq_updates, A_MINUTE + Math.random() * 30);
         } else {
@@ -1196,8 +1192,6 @@
       };
 
       GRAPH_HOUR_RANGE = 6; // hours: controls data range generated for graph
-
-      THRESHOLD_RANGE_VALUES = THRESHOLDS.map(r => [r[1], ""]).flatMap(n => n);
 
       THRESHOLD_SERIES = {};
       thresh_start_ind = 3;
