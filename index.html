@@ -948,11 +948,14 @@
         Civic: [-35.285307, 149.131579]
       };
 
-      COLORS = {
+      const COLORS = {
         Civic: "#636363",
         Florey: "#f8b2b8",
         Monash: "#71abd9"
       };
+
+      const AN_HOUR = 60 * 60 * 1000,
+        A_MINUTE = 60 * 1000;
 
       GOOGLE_LOADED = false;
 
@@ -1019,6 +1022,8 @@
           last_update = Math.max(last_update, parse_act_date(datum.time));
         }
 
+        latest_data.last_update = last_update;
+
         document.getElementById("last-update").innerHTML = date_format(
           new Date(last_update),
           false
@@ -1028,9 +1033,27 @@
           false
         );
         draw_graphs();
+
+        return last_update;
       }
+
+      async function periodic_aq_updates() {
+        if (
+          typeof latest === "undefined" ||
+          latest.last_update < new Date() - AN_HOUR
+        ) {
+          await render_current_aq();
+          setTimeout(periodic_aq_updates, A_MINUTE + Math.random() * 30);
+        } else {
+          setTimeout(
+            periodic_aq_updates,
+            latest.last_update + AN_HOUR + Math.random() * 30
+          );
+        }
+      }
+
       // !!window.chrome && render_current_aq();
-      render_current_aq();
+      periodic_aq_updates();
 
       function aqi_rating(aqi) {
         if (aqi >= 200) return "Hazardous";
