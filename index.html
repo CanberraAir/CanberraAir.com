@@ -30,6 +30,34 @@
         padding-left: 3px;
       }
 
+      .report-line.pm25-hazardous-extreme {
+        border-left-color: black;
+      }
+
+      .report-line.pm25-hazardous-high {
+        border-left-color: #bb6528;
+      }
+
+      .report-line.pm25-very-unhealthy-for-all {
+        border-left-color: #ff3333;
+      }
+
+      .report-line.pm25-unhealthy-for-all {
+        border-left-color: #ff6600;
+      }
+
+      .report-line.pm25-unhealthy-for-sensitive-groups {
+        border-left-color: #ffc000;
+      }
+
+      .report-line.pm25-meets-air-quality-standard {
+        border-left-color: #2f5496;
+      }
+
+      .report-line.pm25-good {
+        border-left-color: #538135;
+      }
+
       .report-line.hazardous {
         border-left-color: red;
       }
@@ -88,6 +116,41 @@
 
       .rating {
         font-weight: bold;
+      }
+
+      .pm25-hazardous-extreme.rating,
+      .pm25-hazardous-extreme .rating {
+        color: black;
+      }
+
+      .pm25-hazardous-high.rating,
+      .pm25-hazardous-high .rating {
+        color: #bb6528;
+      }
+
+      .pm25-very-unhealthy-for-all.rating,
+      .pm25-very-unhealthy-for-all .rating {
+        color: #ff3333;
+      }
+
+      .pm25-unhealthy-for-all.rating,
+      .pm25-unhealthy-for-all .rating {
+        color: #ff6600;
+      }
+
+      .pm25-unhealthy-for-sensitive-groups.rating,
+      .pm25-unhealthy-for-sensitive-groups .rating {
+        color: #ffc000;
+      }
+
+      .pm25-meets-air-quality-standard.rating,
+      .pm25-meets-air-quality-standard .rating {
+        color: #2f5496;
+      }
+
+      .pm25-good.rating,
+      .pm25-good .rating {
+        color: #538135;
       }
 
       .hazardous.rating,
@@ -1006,6 +1069,10 @@
         Civic: [-35.285307, 149.131579]
       };
 
+      // if true, display PM2.5-specific warning levels based on https://www.health.act.gov.au/about-our-health-system/population-health/environmental-monitoring/monitoring-and-regulating-air-0#healthcategories
+      // if false, display AQI warning levels based on https://www.health.act.gov.au/about-our-health-system/population-health/environmental-monitoring/monitoring-and-regulating-air-2
+      PM25_WARNING_LEVELS = false;
+
       const COLORS = {
         Civic: "#636363",
         Florey: "#f8b2b8",
@@ -1117,9 +1184,19 @@
             min10 = stats.v1,
             min30 = stats.v2;
           let delta = min10 - now;
-          let row_rating = aqi_rating(now * 4);
+          let row_rating = "error";
+          if (PM25_WARNING_LEVELS) {
+            row_rating = pm25_rating(now);
+          } else {
+            row_rating = aqi_rating(now * 4);
+          }
 
-          let rating_class = row_rating.toLowerCase().replace(/ /g, "-");
+          let rating_class = "error";
+          if (PM25_WARNING_LEVELS) {
+            rating_class = "pm25-" + row_rating.toLowerCase().replace(/ /g, "-");
+          } else {
+            rating_class = row_rating.toLowerCase().replace(/ /g, "-");
+          }
           div_el.classList.add(rating_class);
 
           line_el.innerHTML =
@@ -1198,12 +1275,25 @@
           let aqi = Math.round(pm25 * 4);
           let div_el = document.getElementById(`${place}-report`);
           let span_el = div_el.getElementsByClassName("rating")[0];
-          let rating = aqi_rating(aqi);
-          let rating_class = rating.toLowerCase().replace(/ /g, "-");
+          let rating_class = "error";
+          let rating = "Error";
+          if (PM25_WARNING_LEVELS) {
+            rating = pm25_rating(pm25);
+            rating_class = "pm25-" + rating.toLowerCase().replace(/ /g, "-");
+          } else {
+            rating = aqi_rating(aqi);
+            rating_class = rating.toLowerCase().replace(/ /g, "-");
+          }
+          
           let delta_class = datum.improving ? "improving" : "worsening";
 
           div_el.classList.add(rating_class, delta_class);
-          span_el.innerHTML = `${rating} - ${aqi} (${pm25} &micro;g/m<sup>3</sup> PM<sub>2.5</sub>)`; // +
+          if (PM25_WARNING_LEVELS) {
+            span_el.innerHTML = `${rating} (${pm25} &micro;g/m<sup>3</sup> PM<sub>2.5</sub>)`;
+          } else {
+            span_el.innerHTML = `${rating} - ${aqi} (${pm25} &micro;g/m<sup>3</sup> PM<sub>2.5</sub>)`;
+          }
+          
 
           last_update = Math.max(last_update, parse_act_date(datum.time));
         }
@@ -1246,6 +1336,17 @@
         else if (aqi >= 66) return "Fair";
         else if (aqi >= 33) return "Good";
         else if (aqi >= 0) return "Very Good";
+        else return "Error";
+      }
+
+      function pm25_rating(pm25) {
+        if (pm25 >= 250) return "Hazardous extreme";
+        else if (pm25 >= 177.9) return "Hazardous high";
+        else if (pm25 >= 107) return "Very unhealthy for all";
+        else if (pm25 >= 40) return "Unhealthy for all";
+        else if (pm25 >= 26) return "Unhealthy for sensitive groups";
+        else if (pm25 >= 9) return "Meets air quality standard";
+        else if (pm25 >= 0) return "Good";
         else return "Error";
       }
 
@@ -1351,20 +1452,19 @@
 
     <script src="https://www.gstatic.com/charts/loader.js"></script>
     <script>
-      // These correspond to ACT Health's 7 point scale
-      // https://www.health.act.gov.au/about-our-health-system/population-health/environmental-monitoring/monitoring-and-regulating-air-0
-      // THRESHOLDS = [
-      //   ["Good", 0, "#538135"],
-      //   ["Standard", 9, "#2f5496"],
-      //   ["Sensitive", 26, "#ffc000"],
-      //   ["All", 40, "#ff6600"],
-      //   ["Very", 107, "#ff3333"],
-      //   ["High", 180, "#bb6528"],
-      //   ["Extreme", 250, "#000000"]
-      // ];
-
-      // We'll use our standard AQI numbers for now, until the differences are clarified
-      THRESHOLDS = [
+      THRESHOLDS = [];
+      if (PM25_WARNING_LEVELS) {
+        THRESHOLDS = [
+          ["Good", 0, "#538135"],
+          ["Standard", 9, "#2f5496"],
+          ["Sensitive", 26, "#ffc000"],
+          ["All", 40, "#ff6600"],
+          ["Very", 107, "#ff3333"],
+          ["High", 180, "#bb6528"],
+          ["Extreme", 250, "#000000"]
+        ];
+      } else {
+        THRESHOLDS = [
         ["Very Good", 0, "#3d85c6"],
         ["Good", 34 / 4, "#274e13"],
         ["Fair", 67 / 4, "#f1c232"],
@@ -1372,6 +1472,7 @@
         ["Very Poor", 150 / 4, "#a64d79"],
         ["Hazardous", 200 / 4, "#ff0000"]
       ];
+      }
 
       LOC_COLORS = {
         Civic: "#636363",
@@ -1395,8 +1496,15 @@
       });
 
       function generate_graph_tooltip(val) {
-        let rating = aqi_rating(val * 4);
-        let rating_class = rating.toLowerCase().replace(/ /g, "-");
+        let rating = "error";
+        let rating_class = "error";
+        if (PM25_WARNING_LEVELS) {
+          rating = pm25_rating(val);
+          rating_class = "pm25-" + rating.toLowerCase().replace(/ /g, "-");
+        } else {
+          rating = aqi_rating(val * 4);
+          rating_class = rating.toLowerCase().replace(/ /g, "-");
+        }
 
         return `${val} - <span class="rating ${rating_class}">${rating}</span>`;
       }
