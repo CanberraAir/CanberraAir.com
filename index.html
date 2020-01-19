@@ -1012,10 +1012,30 @@
         Monash: "#71abd9"
       };
 
+      const AQI_RATINGS = [
+        { Rating: 200, Display: "Hazardous", Class: "hazardous" },
+        { Rating: 150, Display: "Very Poor", Class: "very-poor" },
+        { Rating: 100, Display: "Poor",      Class: "poor" },
+        { Rating:  66, Display: "Fair",      Class: "fair" },
+        { Rating:  33, Display: "Good",      Class: "good" },
+        { Rating:   0, Display: "Very Good", Class: "very-good" }
+      ];
+
+      const CLASSLIST_AQI = AQI_RATINGS.map(x => x.Class);
+
+      const CLASSLIST_DELTA = ["improving", "worsening"];
+
       const AN_HOUR = 60 * 60 * 1000,
         A_MINUTE = 60 * 1000;
 
       GOOGLE_LOADED = false;
+
+      function toggleClassList(elem, setclass, classlist)
+      {
+        for (const val of classlist) {
+          elem.classList.toggle(val, val == setclass ? true : false);
+        }
+      }
 
       function draw_graphs() {
         if (!GOOGLE_LOADED) {
@@ -1119,9 +1139,6 @@
           let delta = min10 - now;
           let row_rating = aqi_rating(now * 4);
 
-          let rating_class = row_rating.toLowerCase().replace(/ /g, "-");
-          div_el.classList.add(rating_class);
-
           line_el.innerHTML =
             `${this.format_pm25(now, delta)}` +
             ` | 10min: ${this.format_pm25(min10)}` +
@@ -1129,11 +1146,13 @@
         },
 
         format_pm25(pm25, dir = 0) {
+          let rating = aqi_rating(pm25 * 4);
+
           let dir_tag = dir > 0 ? "improving" : dir < 0 ? "worsening" : "";
 
           if (dir_tag) dir_tag = ` <span class="${dir_tag}">${dir_tag}</span>`;
 
-          return `<span class="rating">${Math.round(pm25 * 4)} (${Math.round(
+          return `<span class="rating ${rating.Class}">${Math.round(pm25 * 4)} (${Math.round(
             pm25
           )} PM<sub>2.5</sub>)${dir_tag}</span>`;
         },
@@ -1193,17 +1212,19 @@
         let last_update = null;
 
         for (let place in latest_data) {
+          if (!COLORS[place]) continue;
+
           let datum = latest_data[place];
           let pm25 = datum.pm25;
           let aqi = Math.round(pm25 * 4);
           let div_el = document.getElementById(`${place}-report`);
           let span_el = div_el.getElementsByClassName("rating")[0];
           let rating = aqi_rating(aqi);
-          let rating_class = rating.toLowerCase().replace(/ /g, "-");
           let delta_class = datum.improving ? "improving" : "worsening";
 
-          div_el.classList.add(rating_class, delta_class);
-          span_el.innerHTML = `${rating} - ${aqi} (${pm25} &micro;g/m<sup>3</sup> PM<sub>2.5</sub>)`; // +
+          toggleClassList(div_el, rating.Class, CLASSLIST_AQI);
+          toggleClassList(div_el, delta_class, CLASSLIST_DELTA);
+          span_el.innerHTML = `${rating.Display} - ${aqi} (${pm25} &micro;g/m<sup>3</sup> PM<sub>2.5</sub>)`; // +
 
           last_update = Math.max(last_update, parse_act_date(datum.time));
         }
@@ -1240,13 +1261,10 @@
       periodic_aq_updates();
 
       function aqi_rating(aqi) {
-        if (aqi >= 200) return "Hazardous";
-        else if (aqi >= 150) return "Very Poor";
-        else if (aqi >= 100) return "Poor";
-        else if (aqi >= 66) return "Fair";
-        else if (aqi >= 33) return "Good";
-        else if (aqi >= 0) return "Very Good";
-        else return "Error";
+        for (const val of AQI_RATINGS) {
+          if(aqi >= val.Rating) return val;
+        }
+        return "Error";
       }
 
       const MONTH_NAMES = [
@@ -1396,9 +1414,8 @@
 
       function generate_graph_tooltip(val) {
         let rating = aqi_rating(val * 4);
-        let rating_class = rating.toLowerCase().replace(/ /g, "-");
 
-        return `${val} - <span class="rating ${rating_class}">${rating}</span>`;
+        return `${val} - <span class="rating ${rating.Class}">${rating.Display}</span>`;
       }
 
       function generate_graph_data(offset, range) {
