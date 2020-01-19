@@ -1139,8 +1139,6 @@
           let delta = min10 - now;
           let row_rating = aqi_rating(now * 4);
 
-          div_el.classList.add(row_rating.Class);
-
           line_el.innerHTML =
             `${this.format_pm25(now, delta)}` +
             ` | 10min: ${this.format_pm25(min10)}` +
@@ -1148,11 +1146,13 @@
         },
 
         format_pm25(pm25, dir = 0) {
+          let rating = aqi_rating(pm25 * 4);
+
           let dir_tag = dir > 0 ? "improving" : dir < 0 ? "worsening" : "";
 
           if (dir_tag) dir_tag = ` <span class="${dir_tag}">${dir_tag}</span>`;
 
-          return `<span class="rating">${Math.round(pm25 * 4)} (${Math.round(
+          return `<span class="rating ${rating.Class}">${Math.round(pm25 * 4)} (${Math.round(
             pm25
           )} PM<sub>2.5</sub>)${dir_tag}</span>`;
         },
@@ -1222,7 +1222,6 @@
           let rating = aqi_rating(aqi);
           let delta_class = datum.improving ? "improving" : "worsening";
 
-          //div_el.classList.add(rating_class, delta_class);
           toggleClassList(div_el, rating.Class, CLASSLIST_AQI);
           toggleClassList(div_el, delta_class, CLASSLIST_DELTA);
           span_el.innerHTML = `${rating.Display} - ${aqi} (${pm25} &micro;g/m<sup>3</sup> PM<sub>2.5</sub>)`; // +
