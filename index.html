@@ -231,10 +231,7 @@
             <div class="card-body">
               <h5 class="card-title">
                 Current Air Quality
-                <span class="time-ago"
-                  >hourly, last update: <span id="last-update"></span>, next
-                  update: <span id="next-update"></span
-                ></span>
+                <span class="time-ago">hourly, last update: <span id="last-update"></span>, next update: <span id="next-update"></span></span>
               </h5>
               <div class="current-status">
                 <div id="Florey-report" class="report-line">
@@ -250,34 +247,30 @@
               </div>
               <cite style="font-size: 0.8em;"
                 >Accurate hourly data courtesy of the wonderful
-                <a href="https://airrater.org/">AirRater.org</a> API and
-                app.</cite
-              >
-
+                <a href="https://airrater.org/">AirRater.org</a> API and app.</cite>
+              
               <h5 style="margin-top:5px;">
-                Near Real-Time
-                <span class="time-ago"
-                  >updated: <span id="real-time-last-updated"></span
-                ></span>
+                PurpleAir Real-Time
               </h5>
               <div style="margin-top:-9px; font-style: italic; font-size:0.8em">
-                Note: <a href="#faq-real-time">real-time data</a> is not
-                directly comparable with hourly data.
+                Note: <a href="#faq-real-time">real-time data</a> is not directly comparable with hourly data.
               </div>
-              <div id="north_canberra-report" class="report-line real-time">
-                N. Cbr:
-                <span class="real-time-line">Loading...</span>
-              </div>
-              <div id="tuggeranong-report" class="report-line real-time">
-                Tuggers: <span class="real-time-line">Loading...</span>
-              </div>
+              <div id="purpleair2-real-time-data"></div>
 
-              <cite style="font-size: 0.8em;"
-                >Real time data comes from
-                <a
-                  href="https://www.purpleair.com/map?opt=1/mPM25/a0/cC0#9.71/-35.3231/149.0494"
-                  >PurpleAir monitoring stations</a
-                >. See <a href="#faq-contributing-aqi">FAQ</a> to add your own.
+              <cite style="font-size: 0.8em;">Real time data comes from
+                <a href="https://www.purpleair.com/map?opt=1/mPM25/a0/cC0#9.71/-35.3231/149.0494">PurpleAir monitoring stations</a>. See <a href="#faq-contributing-aqi">FAQ</a> to add your own.
+              </cite>
+
+              <h5 style="margin-top:5px;">
+                Luftdaten Real-Time
+              </h5>
+              <div style="margin-top:-9px; font-style: italic; font-size:0.8em">
+                Note: <a href="#faq-real-time">real-time data</a> is not directly comparable with hourly data.
+              </div>
+              <div id="luftdaten-real-time-data"></div>
+
+              <cite style="font-size: 0.8em;">Real time data comes from
+                <a href="https://sensor.community/">Luftdaten monitoring stations</a>. See <a href="#faq-contributing-aqi">FAQ</a> to add your own.
               </cite>
             </div>
           </div>
@@ -1012,10 +1005,44 @@
         Monash: "#71abd9"
       };
 
+      const AQI_RATINGS = [
+        { Rating: 200, Display: "Hazardous", Class: "hazardous" },
+        { Rating: 150, Display: "Very Poor", Class: "very-poor" },
+        { Rating: 100, Display: "Poor",      Class: "poor" },
+        { Rating:  66, Display: "Fair",      Class: "fair" },
+        { Rating:  33, Display: "Good",      Class: "good" },
+        { Rating:   0, Display: "Very Good", Class: "very-good" }
+      ];
+
+      gps_locations_known = {
+        "-35.276, 149.13": "City",
+        "-35.238, 149.126": "Lyneham",
+        "-35.326, 149.172": "Fyshwick",
+        "-35.356, 149.238": "Queanbeyan",
+        "-35.39, 149.086": "Wanniassa",
+        "-35.212391, 149.057241": "Melba",
+        "-35.228466, 149.161602": "Watson",
+        "-35.244832, 149.145887": "Downer",
+        "-35.245241, 149.448004": "Bungendore",
+        "-35.414488, 149.071253": "Greenway",
+        "-35.426909, 149.120723": "Chisholm",
+        "-35.430261, 149.112967": "Richardson"
+      };
+
+      const CLASSLIST_AQI = AQI_RATINGS.map(x => x.Class);
+
+      const CLASSLIST_DELTA = ["improving", "worsening"];
+
       const AN_HOUR = 60 * 60 * 1000,
         A_MINUTE = 60 * 1000;
 
       GOOGLE_LOADED = false;
+
+      function toggleClassList(elem, setclass, classlist) {
+        for (const val of classlist) {
+          elem.classList.toggle(val, val == setclass ? true : false);
+        }
+      }
 
       function draw_graphs() {
         if (!GOOGLE_LOADED) {
@@ -1025,31 +1052,34 @@
         drawAQI();
       }
 
-      PurpleAir = {
-        api_url: "https://www.purpleair.com/json?show=",
-        sensors: {
-          north_canberra: {
-            id: 42085,
-            last_updated: 0,
-            raw_response: {},
-            stats: {}
+      Luftdaten = {
+        api_url: "https://data.sensor.community/airrohr/v1/filter/box=",
+        box: {
+          topleft: {
+            lat: -34.643624,
+            long: 148.532297
           },
-          tuggeranong: {
-            id: 41449,
-            last_updated: 0,
-            raw_response: {},
-            stats: {}
+          bottomright: {
+            lat: -36.006027,
+            long: 149.861054
           }
         },
         intialized: false,
         update_interval: 5 * A_MINUTE,
+        last_update: null,
+        indoor_only: true,
+        sensor_data: null,
+        div_dataid: "luftdaten-real-time-data",
+        div_data: null,
 
         initialize() {
+          if(this.div_data == null)
+            this.div_data = document.getElementById(this.div_dataid);
           this.load_from_cache();
         },
 
         get last_updated() {
-          return Object.values(this.sensors)[0].last_updated;
+          return this.last_update;
         },
 
         async periodic_update() {
@@ -1073,73 +1103,85 @@
         },
 
         async fetch_and_render_latest() {
-          for (let loc in this.sensors) {
-            let data = await this.fetch_sensor_data(this.sensors[loc]);
+          let data = await this.fetch_sensor_data();
+          this.last_update = new Date();
 
-            this.update_sensor_data(loc, data);
-          }
+          this.update_sensor_data(data);
 
           this.render();
         },
 
         render() {
-          for (let loc in this.sensors) this.render_sensor(loc);
-          document.getElementById(
-            "real-time-last-updated"
-          ).innerHTML = date_format(new Date(this.last_updated));
+          let p2sensors = this.sensor_data.filter(sens => (sens.sensordatavalues.some(sensval => (sensval.value_type === "P2"))));
+          for (const sensor of p2sensors) this.render_sensor(sensor);
+          
+          let unsorteddivs = [].slice.call(this.div_data.children);
+          sorteddivs = unsorteddivs.sort(function(a, b) { if (a.textContent < b.textContent) { return -1; } else { return 1; }});
+          sorteddivs.forEach(d => this.div_data.appendChild(d));
         },
 
-        update_sensor_data(sensor_loc, raw_data) {
-          let last_sensor_update = new Date();
-          let results = raw_data.results;
-
-          let stats = JSON.parse(results[0].Stats);
-
-          this.sensors[sensor_loc].raw_response = raw_data;
-          this.sensors[sensor_loc].stats = stats;
-          this.sensors[sensor_loc].last_updated = last_sensor_update;
+        update_sensor_data(raw_data) {
+          this.sensor_data = raw_data;
 
           this.save_cache();
         },
 
         async fetch_sensor_data(sensor) {
-          let query = this.api_url + sensor.id;
+          let query = `${this.api_url}${this.box.topleft.lat},${this.box.topleft.long},${this.box.bottomright.lat},${this.box.bottomright.long}`;
           return fetch(query).then(r => r.json());
         },
 
-        render_sensor(loc) {
-          let stats = this.sensors[loc].stats;
-          let div_el = document.getElementById(`${loc}-report`);
-          let line_el = div_el.querySelector(".real-time-line");
+        add_sensor(sens) {
+          if(this.div_data == null)
+            this.div_data = document.getElementById(this.div_dataid);
 
-          let dir = 1;
-          let now = stats.v,
-            min10 = stats.v1,
-            min30 = stats.v2;
-          let delta = min10 - now;
-          let row_rating = aqi_rating(now * 4);
+          let location_string = `${sens.location.latitude}, ${sens.location.longitude}`;
+          let location_name = location_string;
+          if(location_string in gps_locations_known)
+            location_name = gps_locations_known[location_string];
+          let divnode = document.createElement("div");
+          divnode.id = `luftdaten-report-${sens.sensor.id}`;
+          divnode.className = "report-line real-time";
+          divnode.innerHTML = `              ${location_name}: <span class="real-time-line">Loading...</span>`;
+          return this.div_data.appendChild(divnode);
+        },
 
-          let rating_class = row_rating.toLowerCase().replace(/ /g, "-");
-          div_el.classList.add(rating_class);
+        find_sensor(sens) {
+          //if(this.div_data == null)
+          //  this.div_data = document.getElementById(this.div_dataid);
 
-          line_el.innerHTML =
-            `${this.format_pm25(now, delta)}` +
-            ` | 10min: ${this.format_pm25(min10)}` +
-            ` | 30min: ${this.format_pm25(min30)}`;
+          return document.getElementById(`luftdaten-report-${sens.sensor.id}`);
+        },
+
+        render_sensor(sens) {
+          if(sens.location.indoor != 1) {
+            let sensor = this.find_sensor(sens);
+            if(sensor === null)
+              sensor = this.add_sensor(sens);
+            
+            let p2values = sens.sensordatavalues.filter(sensval => (sensval.value_type === "P2"))[0];
+            let now = parseFloat(p2values.value)
+            let sensordataspan = sensor.querySelector(".real-time-line")
+            let row_rating = aqi_rating(now * 4);
+            
+            toggleClassList(sensor, row_rating.Class, CLASSLIST_AQI);
+            let timestamp = date_format(new Date(`${sens.timestamp} GMT`), false);
+            sensordataspan.innerHTML = `${this.format_pm25(now)} <span class="time-ago">updated: <span id="luftdaten-real-time-last-updated">${timestamp}</span></span>`;
+          }
         },
 
         format_pm25(pm25, dir = 0) {
-          let dir_tag = dir > 0 ? "improving" : dir < 0 ? "worsening" : "";
+          let rating = aqi_rating(pm25 * 4);
 
-          if (dir_tag) dir_tag = ` <span class="${dir_tag}">${dir_tag}</span>`;
+          let dir_tag = ""; //dir > 0 ? "improving" : dir < 0 ? "worsening" : "";
 
-          return `<span class="rating">${Math.round(pm25 * 4)} (${Math.round(
-            pm25
-          )} PM<sub>2.5</sub>)${dir_tag}</span>`;
+          //if (dir_tag) dir_tag = ` <span class="${dir_tag}">${dir_tag}</span>`;
+
+          return `<span class="rating ${rating.Class}">${Math.round(pm25*4)} (${Math.round(pm25)} PM<sub>2.5</sub>)${dir_tag}</span>`;
         },
 
         load_from_cache() {
-          if (!localStorage.purple_air) return;
+          if (!localStorage.Luftdaten) return;
 
           this.sensors = JSON.parse(localStorage.purple_air);
           for (let loc in this.sensors)
@@ -1149,11 +1191,168 @@
         },
 
         save_cache() {
-          localStorage.purple_air = JSON.stringify(this.sensors);
+          localStorage.Luftdaten = JSON.stringify(this.sensors);
         }
       };
-      PurpleAir.initialize();
-      PurpleAir.periodic_update();
+      Luftdaten.initialize();
+      Luftdaten.periodic_update();
+
+      PurpleAir2 = {
+        api_url: "https://www.purpleair.com/json?exclude=true",
+        box: {
+          topleft: {
+            lat: -34.643624,
+            long: 148.532297
+          },
+          bottomright: {
+            lat: -36.006027,
+            long: 149.861054
+          }
+        },
+        intialized: false,
+        update_interval: 5 * A_MINUTE,
+        last_update: null,
+        indoor_only: true,
+        sensor_data: null,
+        div_dataid: "purpleair2-real-time-data",
+        div_data: null,
+
+        initialize() {
+          if(this.div_data == null)
+            this.div_data = document.getElementById(this.div_dataid);
+          this.load_from_cache();
+        },
+
+        get last_updated() {
+          return this.last_update;
+        },
+
+        async periodic_update() {
+          if (this.cur_timeout) clearTimeout(this.cur_timeout);
+
+          let since_last_update = new Date() - this.last_updated;
+
+          let next_update;
+          if (since_last_update >= this.update_interval) {
+            await this.fetch_and_render_latest();
+            next_update = this.update_interval;
+          } else {
+            this.render();
+            next_update = this.update_interval - since_last_update;
+          }
+
+          this.cur_timeout = setTimeout(
+            () => this.periodic_update(),
+            next_update
+          );
+        },
+
+        async fetch_and_render_latest() {
+          let data = await this.fetch_sensor_data();
+          this.last_update = new Date();
+
+          this.update_sensor_data(data);
+
+          this.render();
+        },
+
+        render() {
+          let p2sensors = this.sensor_data.filter(sensval => (sensval.PM2_5Value));
+          for (const sensor of p2sensors) this.render_sensor(sensor);
+          
+          let unsorteddivs = [].slice.call(this.div_data.children);
+          sorteddivs = unsorteddivs.sort(function(a, b) { if (a.textContent < b.textContent) { return -1; } else { return 1; }});
+          sorteddivs.forEach(d => this.div_data.appendChild(d));
+        },
+
+        update_sensor_data(raw_data) {
+          this.sensor_data = raw_data.results;
+
+          this.save_cache();
+        },
+
+        async fetch_sensor_data(sensor) {
+          let query = `${this.api_url}&nwlat=${this.box.topleft.lat}&nwlng=${this.box.topleft.long}&selat=${this.box.bottomright.lat}&selng=${this.box.bottomright.long}`;
+          return fetch(query).then(r => r.json());
+        },
+
+        add_sensor(sens) {
+          if(this.div_data == null)
+            this.div_data = document.getElementById(this.div_dataid);
+
+          let location_string = `${sens.Lat}, ${sens.Lon}`;
+          let location_name = location_string;
+          if(location_string in gps_locations_known)
+            location_name = gps_locations_known[location_string];
+          let divnode = document.createElement("div");
+          divnode.id = `purpleair2-report-${sens.ID}`;
+          divnode.className = "report-line real-time";
+          divnode.innerHTML = `              ${location_name}: <span class="real-time-line">Loading...</span>`;
+          return this.div_data.appendChild(divnode);
+        },
+
+        find_sensor(sens) {
+          //if(this.div_data == null)
+          //  this.div_data = document.getElementById(this.div_dataid);
+
+          return document.getElementById(`purpleair2-report-${sens.ID}`);
+        },
+
+        render_sensor(sens) {
+          if(sens.DEVICE_LOCATIONTYPE === "outside" && sens.AGE <= 10) {
+            let sensor = this.find_sensor(sens);
+            if(sensor === null)
+              sensor = this.add_sensor(sens);
+
+            let stats = JSON.parse(sens.Stats);
+            let dir = 1;
+            let now = stats.v,
+              min10 = stats.v1,
+              min30 = stats.v2;
+            let delta = min10 - now;
+            let row_rating = aqi_rating(now * 4);
+            let timestamp = date_format(new Date(sens.LastSeen * 1000), false);
+
+            toggleClassList(sensor, row_rating.Class, CLASSLIST_AQI);
+            let sensordataspan = sensor.querySelector(".real-time-line")
+            sensordataspan.innerHTML =
+              `${this.format_pm25(now, delta)}` +
+              ` | 10min: ${this.format_pm25(min10)}` +
+              ` | 30min: ${this.format_pm25(min30)}` +
+              ` <span class="time-ago">updated: <span id="purpleair2-real-time-last-updated">${timestamp}</span></span>`;
+            
+            //let p2values = sens.sensordatavalues.filter(sensval => (sensval.value_type === "P2"))[0];
+            //let now = parseFloat(p2values.value)
+            //sensordataspan.innerHTML = `${this.format_pm25(now)} <span class="time-ago">updated: <span id="purpleair2-real-time-last-updated">${sens.timestamp}</span></span>`;
+          }
+        },
+
+        format_pm25(pm25, dir = 0) {
+          let rating = aqi_rating(pm25 * 4);
+
+          let dir_tag = ""; //dir > 0 ? "improving" : dir < 0 ? "worsening" : "";
+
+          //if (dir_tag) dir_tag = ` <span class="${dir_tag}">${dir_tag}</span>`;
+
+          return `<span class="rating ${rating.Class}">${Math.round(pm25*4)} (${Math.round(pm25)} PM<sub>2.5</sub>)${dir_tag}</span>`;
+        },
+
+        load_from_cache() {
+          if (!localStorage.PurpleAir2) return;
+
+          this.sensors = JSON.parse(localStorage.purple_air);
+          for (let loc in this.sensors)
+            this.sensors[loc].last_updated = new Date(
+              this.sensors[loc].last_updated
+            );
+        },
+
+        save_cache() {
+          localStorage.PurpleAir2 = JSON.stringify(this.sensors);
+        }
+      };
+      PurpleAir2.initialize();
+      PurpleAir2.periodic_update();
 
       var latest = {};
       async function fetch_latest_aq_data() {
@@ -1193,17 +1392,20 @@
         let last_update = null;
 
         for (let place in latest_data) {
+          if (!COLORS[place]) continue;
+
           let datum = latest_data[place];
           let pm25 = datum.pm25;
           let aqi = Math.round(pm25 * 4);
           let div_el = document.getElementById(`${place}-report`);
           let span_el = div_el.getElementsByClassName("rating")[0];
           let rating = aqi_rating(aqi);
-          let rating_class = rating.toLowerCase().replace(/ /g, "-");
           let delta_class = datum.improving ? "improving" : "worsening";
 
-          div_el.classList.add(rating_class, delta_class);
-          span_el.innerHTML = `${rating} - ${aqi} (${pm25} &micro;g/m<sup>3</sup> PM<sub>2.5</sub>)`; // +
+          //div_el.classList.add(rating_class, delta_class);
+          toggleClassList(div_el, rating.Class, CLASSLIST_AQI);
+          toggleClassList(div_el, delta_class, CLASSLIST_DELTA);
+          span_el.innerHTML = `${rating.Display} - ${aqi} (${pm25} &micro;g/m<sup>3</sup> PM<sub>2.5</sub>)`; // +
 
           last_update = Math.max(last_update, parse_act_date(datum.time));
         }
@@ -1240,13 +1442,10 @@
       periodic_aq_updates();
 
       function aqi_rating(aqi) {
-        if (aqi >= 200) return "Hazardous";
-        else if (aqi >= 150) return "Very Poor";
-        else if (aqi >= 100) return "Poor";
-        else if (aqi >= 66) return "Fair";
-        else if (aqi >= 33) return "Good";
-        else if (aqi >= 0) return "Very Good";
-        else return "Error";
+        for (const val of AQI_RATINGS) {
+          if(aqi >= val.Rating) return val;
+        }
+        return "Error";
       }
 
       const MONTH_NAMES = [
@@ -1396,9 +1595,8 @@
 
       function generate_graph_tooltip(val) {
         let rating = aqi_rating(val * 4);
-        let rating_class = rating.toLowerCase().replace(/ /g, "-");
 
-        return `${val} - <span class="rating ${rating_class}">${rating}</span>`;
+        return `${val} - <span class="rating ${rating.Class}">${rating.Display}</span>`;
       }
 
       function generate_graph_data(offset, range) {
