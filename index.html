@@ -289,21 +289,32 @@
               <h5 class="card-title">Latest News</h5>
 
               <div class="report-line notice">
+                N Cbr. real time sensor was down, now fixed!
+                <span class="time-ago">Mon, Jan 28 8am</span>
+              </div>
+
+              <div class="report-line poor">
+                Site is currently set up <em>only</em> for the PM2.5 particles caused
+                by bushfire smoke. Do not use these ratings for the PM10 dust particles
+                caused by the current dust storm. (I will add in PM10 reports soon.)
+                <span class="time-ago">Thu, Jan 23 12:45pm</span>
+              </div>
+
+              <div class="report-line notice">
+                Real-time updates added, courtesy of
+                <a
+                  href="https://www.purpleair.com/map?opt=1/mPM25/a0/cC0#9.71/-35.3231/149.0494"
+                  >PurpleAir</a
+                >
+                <span class="time-ago">Sun, Jan 13 12pm</span>
+              </div>
+
+              <div class="report-line notice">
                 Site code available on
                 <a href="https://github.com/CanberraAir/CanberraAir.com"
                   >Github</a
                 >. Additions welcome.
                 <span class="time-ago">Fri, Jan 10 5pm</span>
-              </div>
-
-              <div class="report-line very-good">
-                The air is currently clear! Open your windows, start your fans!
-                <span class="time-ago">Thu, Jan 09 2pm</span>
-              </div>
-
-              <div class="report-line notice">
-                Initial air quality over time graphs online.
-                <span class="time-ago">Thu, Jan 09 2pm</span>
               </div>
 
               <div class="report-line dark-notice">
@@ -1029,7 +1040,7 @@
         api_url: "https://www.purpleair.com/json?show=",
         sensors: {
           north_canberra: {
-            id: 42085,
+            id: 46225,
             last_updated: 0,
             raw_response: {},
             stats: {}
@@ -1193,6 +1204,8 @@
         let last_update = null;
 
         for (let place in latest_data) {
+          if (!COLORS[place]) continue;
+
           let datum = latest_data[place];
           let pm25 = datum.pm25;
           let aqi = Math.round(pm25 * 4);
