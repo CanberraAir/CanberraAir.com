@@ -5,5 +5,5 @@ spaghetti, but it works. All commits and comments welcome.
 
 
 ## TODOs (Would be happy for help on these)
-- Switch data source from AirRater.org back to data.act.gov's new hourly data set.
-- Integrate Purple Hour sub-hourly data for true real-time AQI updates.
+
+Please check current open issues. Issues should be associated with a new pull request.
