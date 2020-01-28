@@ -1080,6 +1080,7 @@
         _sensors: {},
         _cache_loaded: false,
         _on_update: () => {}, // to be replaced by PurpleAir object
+        ui_displayed: false,
 
         set on_update(cbk) {
           this._on_update = cbk;
@@ -1099,6 +1100,13 @@
         },
 
         async show_customize_ui() {
+          if (this.ui_displayed) {
+            this.customize_el.innerHTML = "";
+            this.ui_displayed = false;
+            return;
+          }
+
+          this.ui_displayed = true;
           this.customize_el.innerHTML = this.generate_customize_instructions();
           let sensor_list_html = await this.generate_sensor_list_node();
 
