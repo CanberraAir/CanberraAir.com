@@ -1724,12 +1724,12 @@
         ).map((n, i) =>
           [
             parse_act_date(n),
-            raw_pm25[0][i], // Civic
-            generate_graph_tooltip(raw_pm25[0][i]),
-            raw_pm25[1][i], // Florey
-            generate_graph_tooltip(raw_pm25[1][i]),
-            raw_pm25[2][i], // Monash
-            generate_graph_tooltip(raw_pm25[2][i])
+            Math.round(raw_pm25[0][i]), // Civic
+            generate_graph_tooltip(Math.round(raw_pm25[0][i])),
+            Math.round(raw_pm25[1][i]), // Florey
+            generate_graph_tooltip(Math.round(raw_pm25[1][i])),
+            Math.round(raw_pm25[2][i]), // Monash
+            generate_graph_tooltip(Math.round(raw_pm25[2][i]))
           ].concat(threshold_ranges)
         );
 
